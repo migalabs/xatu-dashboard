@@ -1,0 +1,34 @@
+arguments {'-d': ['metrics']}
+
+  -*-*-*-*-*-*-*-*-*-*-*-*
+| Generating dashboards... |
+  *-*-*-*-*-*-*-*-*-*-*-*-
+
+
+** metrics dashboard's plots **
+
+Creating CPU usage
+Creating Memory usage
+Creating Network In
+Creating Network Out
+Creating Filesystem Read Ratio
+Creating Filesystem Write Ratio
+Creating Power Consumption
+Creating Energy Consumption
+
+  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+| Successfully generated the dashboard. 2024-04-03 18:00:01 |
+  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+/plotly_gen/generated:
+total 64156
+-rw-r--r--    1 root     root      63459514 Apr  3 17:47 blob.html
+-rw-r--r--    1 1000     1000          2972 Apr  3 16:41 index.html
+drwx------    2 1000     1000          4096 Apr  2 09:12 legacy
+-rw-r--r--    1 root     root        641406 Apr  3 18:00 node_metrics.html
+-rw-r--r--    1 root     root       1573076 Apr  3 17:47 nodes.html
+drwx------    2 1000     1000          4096 Apr  2 09:12 test
+
+/plotly_gen/generated_old:
+total 4
+drwxr-xr-x    2 1000     1000          4096 Apr  3 16:44 test

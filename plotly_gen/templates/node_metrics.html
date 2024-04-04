@@ -1,0 +1,374 @@
+<!DOCTYPE>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta name="description" content="" />
+
+  <link rel="canonical" href="https://monitoreth.io/dappnode" />
+
+  <title>Monitor Node System Metrics</title>
+  <meta itemprop="name" content="MonitorEth" />
+  <meta itemprop="image" content="../static/img/favicon.png" />
+  <meta itemprop="description" content="Monitor Ethereum with <3 by MigaLabs" />
+
+  <!-- Favicons -->
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/img/favicon.png" rel="icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/aos/aos.css" rel="stylesheet">
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="<!--# echo var="web_base_endp" default="no" -->/static/css/dashboard.css" rel="stylesheet">
+
+  <!-- import plotlyjs -->
+  <script src="https://cdn.plot.ly/plotly-2.25.2.min.js"></script>
+
+    <!-- Vendor JS Files -->
+  <script src="<!--# echo var="web_base_endp" default="no" -->/static/vendor/aos/aos.js"></script>
+  <script src="<!--# echo var="web_base_endp" default="no" -->/static/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="<!--# echo var="web_base_endp" default="no" -->/static/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="<!--# echo var="web_base_endp" default="no" -->/static/vendor/typed.js/typed.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <!-- =======================================================
+  * Template Name: MyResume - v4.7.0
+  * Template URL: https://bootstrapmade.com/free-html-bootstrap-template-my-resume/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+  <style>
+    .nav-menu a, .nav-menu a:focus {
+      padding: 0.45rem;
+      height: 2.2rem;
+      width: 2.2rem;
+    }
+
+    .home:before {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 992px) {
+      .nav-menu a, .nav-menu a:focus {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <div id="preloader"></div>
+
+  <!-- ======= Mobile nav toggle button ======= -->
+  <!-- <button type="button" class="mobile-nav-toggle d-xl-none"><i class="bi bi-list mobile-nav-toggle"></i></button> -->
+  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="d-flex flex-column justify-content-center">
+
+    <nav id="navbar" class="navbar nav-menu">
+      <ul>
+        <li>
+          <a href="#home" class="nav-link scrollto active node-metrics-page">
+            <i class="bx bx-home"></i>
+            <span>Home</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#cpu-usage" class="nav-link scrollto">
+            <i class="bi bi-cpu"></i>
+            <span>CPU Usage</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#memory-usage" class="nav-link scrollto">
+            <i class="bi bi-memory"></i>
+            <span>Memory Usage</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#network-in-out" class="nav-link scrollto">
+            <i class="bi bi-wifi"></i>
+            <span>Network Bandwith In/Out</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#file-rw" class="nav-link scrollto">
+            <i class="bi bi-file-earmark-bar-graph"></i>
+            <span>Filesystem Read/Write Ratio</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#power-usage" class="nav-link scrollto">
+            <i class="bi bi-plug"></i>
+            <span>Power Consumption</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#energy-usage" class="nav-link scrollto">
+            <i class="bi bi-lightning-charge"></i>
+            <span>Energy Consumption</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#contact" class="nav-link scrollto">
+            <i class="bi bi-envelope"></i>
+            <span>Contact</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/" class="nav-link scrollto">
+            <i class="bi bi-arrow-return-left"></i>
+            <span>Back to main page</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav><!-- .nav-menu -->
+
+  </header><!-- End Header -->
+
+  <!-- ======= Landing ======= -->
+  <section id="home" class="node-metrics-page d-flex flex-column justify-content-center">
+    <div class="container shadows" data-aos="zoom-in" data-aos-delay="100">
+      <h1>Node system metrics</h1>
+      <h2>Our Ethereum Node Performance Dashboard</h2>
+
+      <p>Monitor our Ethereum Node System's
+        <span class="typed"
+          data-typed-items="CPU Usage, Memory Usage, Network Bandwith In/Out, File System Read/Write Ratio, Power Consumption">
+        </span>
+      </p>
+
+      <p style="font-size: 18px;">Powered by MigaLabs </p>
+
+      <div class="social-links">
+        <a href="https://migalabs.io/" class="window">
+          <i class="bi bi-window"></i>
+        </a>
+
+        <a href="https://github.com/migalabs" class="github">
+          <i class="bi bi-github"></i>
+        </a>
+
+        <a href="https://twitter.com/miga_labs" class="twitter">
+          <i class="bi bi-twitter"></i>
+        </a>
+      </div>
+    </div>
+  </section><!-- Landing -->
+
+  <main id="main">
+
+    <section id="about" class="mtbs">
+      <div class="container" data-aos="fade-up">
+        <div class="section-title">
+              <h2>About</h2>
+        </div>
+        <div class="header-subtitle">
+          This dashboard showcases the hardware resource metrics of a node running on the Ethereum mainnet network.<br>
+          The node runs on a DappNode, alongside CAdvisor, Node Exporter and Prometheus.<br><br>
+          <strong>Software:</strong><br>
+          <ul>
+            <li> Lodestar: 0.1.6</li>
+            <li> Nethermind: 1.0.42</li>
+          </ul>
+          <br><strong>Hardware:</strong><br>
+          <ul>
+            <li> CPU: i7-1165G7</li>
+            <li> Mem: 32GB</li>
+            <li> Disk: 2TB SSD nvme</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= CPU Usage Section ======= -->
+    <section id="cpu-usage" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>CPU Usage</h2>
+        </div>
+        <div class="mtbs-graph">
+          <div id="cpu_usage" class="update" style="width: 100%; height: 750px;">
+            <!-- cpu-usage -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End CPU Usage Section -->
+
+    <!-- ======= Memory Usage Section ======= -->
+    <section id="memory-usage" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Memory Usage</h2>
+        </div>
+
+        <div class="mtbs-graph">
+          <div id="memory_usage" class="update" style="width: 100%; height: 750px;">
+            <!-- memory-usage -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Memory Usage Section -->
+
+    <!-- ======= Network Bandwith In/Out Section ======= -->
+    <section id="network-in-out" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Network Bandwith In/Out</h2>
+        </div>
+
+        <div class="mtbs-graph">
+          <div id="network_in_out" class="update" style="width: 100%; height: 750px;">
+            <!-- network-in-out -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Network Bandwith In/Out Section -->
+
+    <!-- ======= Filesystem Read/Write Ratio Section ======= -->
+    <section id="file-rw" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>File System Read/Write Ratio</h2>
+        </div>
+
+        <div class="mtbs-graph">
+          <div id="file_rw" class="update" style="width: 100%; height: 750px;">
+            <!-- file-rw -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Filesystem Read/Write Ratio Section -->
+
+    <!-- ======= Power Consumption Section ======= -->
+    <section id="power-usage" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Power Consumption</h2>
+        </div>
+
+        <div class="mtbs-graph">
+          <div id="power_usage" class="update" style="width: 100%; height: 750px;">
+            <!-- power-usage -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Power Consumption Section -->
+
+    <!-- ======= Energy Consumption Section ======= -->
+    <section id="energy-usage" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Energy Consumption</h2>
+        </div>
+
+        <div class="mtbs-graph">
+          <div id="energy_usage" class="update" style="width: 100%; height: 750px;">
+            <!-- energy-usage -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Energy Consumption Section -->
+
+    <!-- ======= Timestamp ======= -->
+    <section id="timestamp" class="update mtbs">
+      <h2 style="font-family:Lato;font-size:20px;color:#4c5773;opacity:0.46;">
+          All plot data retrieved <!-- timestamp -->
+      </h2>
+    </section>
+
+    <!-- ======= Contact Section ======= -->
+    <section id="contact" class="contact">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Contact Us</h2>
+        </div>
+
+        <div class="row mt-1">
+
+          <div class="col-lg-4">
+            <div class="info">
+              <div class="email">
+                <i class="bi bi-envelope"></i>
+                <h4>Email:</h4>
+                <a href="migalabs@protonmail.com">
+                  migalabs@protonmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Contact Section -->
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+    <div class="container">
+      <h3>Powered By MigaLabs</h3>
+
+      <div class="social-links">
+        <a href="https://migalabs.io" class="window">
+          <i class="bi bi-window"></i>
+        </a>
+
+        <a href="https://github.com/migalabs" class="github">
+          <i class="bx bxl-github"></i>
+        </a>
+
+        <a href="https://twitter.com/miga_labs" class="twitter">
+          <i class="bx bxl-twitter"></i>
+        </a>
+      </div>
+      <div class="copyright">
+        &copy; Copyright <strong><span>MigaLabs</span></strong>. All Rights Reserved
+      </div>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
+
+  <!-- Template Main JS File -->
+  <script src="<!--# echo var="web_base_endp" default="no" -->/static/js/main.js"></script>
+  <script type="text/javascript" src="/static/js/real_time_handling.js"></script>
+
+</body>
+
+</html>
