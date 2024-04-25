@@ -6,12 +6,12 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta name="description" content="" />
 
-  <link rel="canonical" href="https://monitoreth.io/dappnode" />
+  <link rel="canonical" href="https://monitoreth.io/blob" />
 
   <title>Monitor Node System Metrics</title>
   <meta itemprop="name" content="MonitorEth" />
   <meta itemprop="image" content="../static/img/favicon.png" />
-  <meta itemprop="description" content="Monitor Ethereum with <3 by MigaLabs" />
+  <meta itemprop="description" content="By MigaLabs" />
 
   <!-- Favicons -->
   <link href="<!--# echo var="web_base_endp" default="no" -->/static/img/favicon.png" rel="icon">
@@ -144,12 +144,12 @@
 
   <main id="main">
 
-    <!-- ======= Blos per Slot Section ======= -->
+    <!-- ======= Blobs per Slot Section ======= -->
     <section id="blobs-per-slot" class="mtbs">
       <div class="container" data-aos="fade-up">
 
         <div class="section-title">
-          <h2>CPU Usage</h2>
+          <h2>Blobs per Slot</h2>
         </div>
         <div class="mtbs-graph">
           <div id="cpu_usage" class="update" style="width: 100%; height: 750px;">
@@ -158,7 +158,23 @@
         </div>
 
       </div>
-    </section><!-- End CPU Usage Section -->
+    </section><!-- Blobs per Slot Section -->
+
+    <!-- ======= Slots by Blob count Section ======= -->
+    <section id="slots-by-blob-count" class="mtbs">
+      <div class="container" data-aos="fade-up">
+
+        <div class="section-title">
+          <h2>Slots by Blob count</h2>
+        </div>
+        <div class="mtbs-graph">
+          <div id="slots_by_blob_count" class="update" style="width: 100%; height: 750px;">
+            <!-- slots-by-blob-count -->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- Slots by Blob count Section -->
 
     <!-- ======= Time between first and last blob Section ======= -->
     <section id="fist-last-blob" class="mtbs">
