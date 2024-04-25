@@ -1,7 +1,7 @@
 from time import sleep
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
-from utils import getRootPath, boldText
+from utils import bold
 from json import JSONDecodeError
 import pandas as pd
 import datetime as dt
@@ -20,7 +20,7 @@ prefix = 'eth/v1/nodes/consensus/'
 NOW = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
-def noticePrint(string):
+def notice_print(string):
     length = int(string.__len__() / 2)
 
     print('\n  ', end='')
@@ -30,7 +30,7 @@ def noticePrint(string):
     print('\n')
 
 
-def safeFetchEndpoint(session, url, endpoint, params=None):
+def endpoint_safe_fetch(session, url, endpoint, params=None):
     for times in range(3):
         try:
             response = (session.get(url + endpoint, params=params))
@@ -57,7 +57,7 @@ def safeFetchEndpoint(session, url, endpoint, params=None):
     return (None)
 
 
-def printCurrentEndpoint(endpoint):
+def current_endpoint_print(endpoint):
     historic = (endpoint.find('historic') != -1)
 
     name = endpoint.split('/')
@@ -69,7 +69,7 @@ def printCurrentEndpoint(endpoint):
     print(f'Creating {name}' + (' (historic)' if (historic) else ''))
 
 
-def parsePercentLegendLabels(df, percent_names, no_perc_labels):
+def legend_labels_percent_parse(df, percent_names, no_perc_labels):
     if ('timestamp' in df):
         percentages = df.groupby('timestamp')[percent_names[1]].apply(
             lambda x: (x / x.sum() * 100)
@@ -79,29 +79,29 @@ def parsePercentLegendLabels(df, percent_names, no_perc_labels):
 
     percentages = percentages.round(3)
     df['percentage'] = percentages.reset_index(drop=True)
-    df['legend_labels'] = df[percent_names[0]].apply(boldText)
+    df['legend_labels'] = df[percent_names[0]].apply(bold)
 
     if (not no_perc_labels):
         df['legend_labels'] = df.apply(
             lambda x: x['legend_labels'] +
-            boldText(' (' + str(x['percentage']) + '%)'), axis=1)
+            bold(' (' + str(x['percentage']) + '%)'), axis=1)
 
 
 # percent_names is just the column you want to apply the percentage of nodes
 # to, for the legend labels. For example, 'client_type'.
-def createdfApi(session, endpoint, percent_names=None, no_perc_labels=False):
-    printCurrentEndpoint(endpoint)
+def df_api_create(session, endpoint, percent_names=None, no_perc_labels=False):
+    current_endpoint_print(endpoint)
 
-    data = safeFetchEndpoint(session, API_URL, endpoint)
+    data = endpoint_safe_fetch(session, API_URL, endpoint)
 
     if (not data):
-        noticePrint(f'Data from the API could not be fetched. {NOW}')
+        notice_print(f'Data from the API could not be fetched. {NOW}')
         exit(1)
 
     df = pd.json_normalize(data, record_path='data', meta='timestamp')
 
     if (percent_names):
-        parsePercentLegendLabels(df, percent_names, no_perc_labels)
+        legend_labels_percent_parse(df, percent_names, no_perc_labels)
 
     return (df)
 
@@ -184,14 +184,14 @@ symbol_functions: dict = {
 }
 
 
-def createdfPromHTTP(
+def df_prometheus_create(
     session, endpoint, record_path, params=None, symbol=None, plot_name='',
     labels_column='legend_labels', names=None
 ):
     if (params):
-        printCurrentEndpoint(plot_name)
+        current_endpoint_print(plot_name)
 
-    data = safeFetchEndpoint(
+    data = endpoint_safe_fetch(
         session,
         PROM_HTTP_URL,
         endpoint,
@@ -199,7 +199,7 @@ def createdfPromHTTP(
     )
 
     if (not data):
-        noticePrint(f'Data from the API could not be fetched. {NOW}')
+        notice_print(f'Data from the API could not be fetched. {NOW}')
         exit(1)
 
     df = pd.json_normalize(
@@ -214,8 +214,8 @@ def createdfPromHTTP(
     return (df)
 
 
-def createdfClickhouse(client: Client, query, plot_name=''):
-    printCurrentEndpoint(plot_name)
+def df_clickhouse_create(client: Client, query, plot_name=''):
+    current_endpoint_print(plot_name)
 
     df = client.query_dataframe(query)
 
@@ -224,26 +224,26 @@ def createdfClickhouse(client: Client, query, plot_name=''):
 
 # percent_names[0] is supposed to be what you'd be 'coloring' (like client_name)
 # percent_names[1] is supposed to be the count (like node_count)
-def createdfCSV(path, print_name=None, percent_names=None, no_perc_labels=False):
+def df_CSV_create(path, print_name=None, percent_names=None, no_perc_labels=False):
     if (print_name):
         print(f'Creating {print_name} from CSV')
 
     df = pd.read_csv(f'{getRootPath()}/{path}')
 
     if (percent_names):
-        parsePercentLegendLabels(df, percent_names, no_perc_labels)
+        legend_labels_percent_parse(df, percent_names, no_perc_labels)
 
     return (df)
 
 
-def sortByPercentage(df, index):
+def percentage_sort_by(df, index):
     sorted_df = df.sort_values(by='percentage', ascending=False)
     sorted_df = sorted_df.reset_index(drop=True)
 
     return (sorted_df[index].tolist())
 
 
-def legendUpdate(fig, yanchor, xanchor, orientation, font_size, x):
+def legend_update(fig, yanchor, xanchor, orientation, font_size, x):
     fig.update_layout(
         legend=dict(
             yanchor=yanchor,
@@ -258,9 +258,9 @@ def legendUpdate(fig, yanchor, xanchor, orientation, font_size, x):
     )
 
 
-def formatTitle(fig, title, x, y):
+def title_format(fig, title, x, y):
     fig.update_layout(
-        title=boldText(title),
+        title=bold(title),
         font_family='Lato',
         font_color='#4c5773',
         title_font_color='#4c5773',
@@ -271,18 +271,18 @@ def formatTitle(fig, title, x, y):
     )
 
 
-def setBoldLabels(fig):
-    fig.for_each_trace(lambda t: t.update(name = boldText(t.name)))
+def bold_labels_set(fig):
+    fig.for_each_trace(lambda t: t.update(name = bold(t.name)))
 
 
 def getNodesTimestamp(session):
-    df = createdfApi(session, prefix + '/all/client_diversity')
+    df = df_api_create(session, prefix + '/all/client_diversity')
     df_timestamp = pd.to_datetime(df['timestamp'][0]).strftime('%B %d, %Y, %H:%M UTC')
 
     return {'timestamp': df_timestamp}
 
 
-def getCurrentTimestamp(session):  # unused but put because of function pointers
+def current_timestamp_get(_):
     timestamp = dt.datetime.now(dt.timezone.utc).strftime('%B %d, %Y, %H:%M UTC')
 
     return {'timestamp': timestamp}
