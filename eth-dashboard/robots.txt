@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /data-api/api/
-Noindex: /data-api/api/
-Sitemap: https://monitoreth.io/sitemap.xml
