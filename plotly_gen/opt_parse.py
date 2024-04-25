@@ -1,9 +1,9 @@
-OPT_START_INDEX = 2
+OPT_START_INDEX = 1
 
 
 # This function will get options from the command line, even if they
 # are not valid, but main will ignore them
-def getOptions(n_args, args):
+def get_options(n_args, args):
     option_dict = {}
 
     for index in range(OPT_START_INDEX, n_args):
