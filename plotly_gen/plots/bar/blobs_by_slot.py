@@ -1,9 +1,6 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold
-import pandas as pd
-import numpy as np
-
+from utils import bold, fill_in_gaps
 
 # todo make this into env variable
 BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
@@ -11,6 +8,7 @@ BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
 
 def blobs_per_slot_create(client):
     plotname = 'blobs-by-slot'
+    title = 'Blob count per slot'
     limit = 30
 
     query = f'''
@@ -22,22 +20,15 @@ def blobs_per_slot_create(client):
                 limit {limit}
             '''
 
-    df = df_clickhouse_create(client, query, 'Blobs per slot')
+    df = df_clickhouse_create(client, query, title)
 
-    # The following is mainly for just adding all missing slots as new rows
-    # with 0 as their blob count
-    # df.iloc[:] = df.iloc[::-1].values
-    df.set_index('slot', inplace=True)
-    full_index = pd.Index(np.arange(df.index.min(), df.index.max() + 1), name='slot')
-    df = df.reindex(full_index, fill_value=0)
-    df.reset_index(inplace=True)
-    df = df.tail(limit)
+    # adding all missing slots as new rows with 0 as blob count
+    df = fill_in_gaps(df, column='slot', fill_value=0, limit=limit)
 
     fig = bar_create_fig(
         df,
         x='slot', y='blob_count',
-        title='Blob count per slot',
-        color_discrete_sequence='#d9f45d', thickness=0.3,
+        title=title, color_discrete_sequence='#d9f45d', thickness=0.3,
         hovertemplate=f'{bold("slot")}: %{{x:,}}<br>{bold("blobs")}: %{{y:,}}',
         ytitle='Blob count', xtitle='Slot',
         xskips=5, yskips=1
