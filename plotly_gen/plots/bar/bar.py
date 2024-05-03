@@ -51,7 +51,7 @@ def bar_create_fig(
         ticktext=[f"<b>{'{:,}'.format(x)}     </b>" for x in tickvals]
     )
 
-    tickvals = df[x] if (not xskips) else [x for x in np.arange(0, df[x].max() + 1, xskips)]
+    tickvals = df[x] if (not xskips) else [x for x in np.arange(df[x].min(), df[x].max() + 1, xskips)]
 
     fig.update_xaxes(
         title_text=bold(xtitle),
