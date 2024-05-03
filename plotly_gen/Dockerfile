@@ -12,4 +12,4 @@ RUN pip install -U python-dotenv
 
 RUN apk add --update busybox-suid
 
-CMD crontab /plotly_gen/cron/jobs && crontab -l && python3 /plotly_gen/main.py /plotly_gen -t; crond -f
+CMD crontab /plotly_gen/cron/jobs && crontab -l && python3 /plotly_gen/main.py -t 1 2 3 4 5 6 7; crond -f
