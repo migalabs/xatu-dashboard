@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
+import pandas as pd
 from creates import bold_labels_set
 from datetime import datetime
 from export import ABS_PATH
@@ -20,7 +21,7 @@ def fraction_clamp(fraction, clamp=200):
     if ((fraction - smaller) > (bigger - fraction)):
         return (bigger)
     else:
-        return (smaller)
+        return (1 if (smaller == 0) else smaller)
 
 
 def annotations_delete(fig):
@@ -29,9 +30,10 @@ def annotations_delete(fig):
 
 
 # Used for most "line graphs" but is actually an area graph
-def area_fig_create(
+def area_create_fig(
     df, x, y, name, color_discrete_map, markers: bool, customdata, color_lines,
-    facet_row=None  # column that separates the data for stacked plots
+    facet_row=None, log_y: bool = False
+    # facet_row: column that separates the data for stacked plots
 ):
     fig = px.area(
         df,
@@ -42,7 +44,8 @@ def area_fig_create(
         markers=markers,
         custom_data=[customdata] if (customdata) else None,
         hover_data=[name],
-        facet_row=facet_row
+        facet_row=facet_row,
+        log_y=log_y
     )
 
     if (color_lines):
@@ -170,3 +173,16 @@ def area_customize(
     annotations_delete(fig)
 
     return (fig)
+
+
+def fill_in_gaps(df, column, fill_value, limit=None):
+    df.set_index(column, inplace=True)
+    full_index = pd.Index(
+        np.arange(df.index.min(), df.index.max() + 1), name=column
+    )
+    df = df.reindex(full_index, fill_value=0)
+    df.reset_index(inplace=True)
+
+    if (limit):
+        df = df.tail(limit)
+        df.reset_index(inplace=True)
