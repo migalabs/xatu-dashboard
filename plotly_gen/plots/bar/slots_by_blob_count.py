@@ -1,6 +1,6 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold, fill_in_gaps
+from utils import bold, fill_in_gaps, title_format
 
 # todo make this into env variable
 BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
@@ -26,8 +26,6 @@ def slots_by_blob_count_create(client):
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
 
-    print(df)
-
     fig = bar_create_fig(
         df,
         x='blob_count', y='slot_count', title=title,
@@ -45,6 +43,11 @@ def slots_by_blob_count_create(client):
     )
 
     fig.update_traces(marker_line_color='#ff989f', marker_line_width=2)
+
+    # For some reason annotations break everything so its added it into the
+    # title instead. Reason MIGHT be annotations_delete()...?
+    title_format(fig, dict(
+        title_text=bold(title + "    -   ") + f' Latest {limit} slots'))
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
