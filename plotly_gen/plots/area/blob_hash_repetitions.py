@@ -1,11 +1,8 @@
-from os import times
-from plots.area.area import area_fig_create, area_customize, fraction_clamp
-from utils import date_since, to_unix_date_tuple
+from plots.area.area import area_create_fig, area_customize, fraction_clamp
 from creates import df_clickhouse_create
-from utils import bold
+from utils import date_since
 from typing import List
-import pandas as pd
-import numpy as np
+from utils import bold, title_format
 
 # todo make this into env variable
 BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
@@ -23,8 +20,7 @@ def blob_hash_repetitions_create(client):
     plotname = 'blob-hash-repetitions'
     title = 'Blob hash repetitions'
     start_time = date_since(days=1)
-    limit = 100
-    # dates = to_unix_date_tuple(start_time, end_time)
+    limit = 150
 
     query = f'''
                 select
@@ -40,26 +36,30 @@ def blob_hash_repetitions_create(client):
     df = df_clickhouse_create(client, query, title)
     df['full_hashes'] = df['versioned_hash']
 
-    fig = area_fig_create(
+    fig = area_create_fig(
         df, x='versioned_hash', y='repeat_times', name='versioned_hash',
-        color_discrete_map=None, markers=True, customdata='full_hashes',
-        color_lines='rgb(255, 181, 120)'
+        color_discrete_map=None, markers=False, customdata='full_hashes',
+        color_lines='rgb(255, 181, 120)', log_y=True
     )
 
     hovertemplate = f'{bold("Repetitions")}: %{{y}}<br>{bold("Hash")}: %{{customdata[0]}}<extra></extra>'
 
-    tickvals = df['versioned_hash'].tolist()
     xskips = 10
 
     area_customize(
         fig, df, title=title,
         xtitle='Hash', ytitle='Repetitions', hovertemplate=hovertemplate,
-        legend=False, percent=False, markers=True, start_time=start_time,
+        legend=False, percent=False, markers=False, start_time=start_time,
         inv=False, filling=True, name='repeat_times', rate='L0.5',
         yskips=fraction_clamp(df['repeat_times'].max() / 5),
-        tickvals=[i for i in range(0, len(df), xskips)],
-        xrange=None, xticktext=ticktext_labels_truncate(xskips, df['versioned_hash'])
+        tickvals=[i for i in range(0, len(df), xskips)], xrange=None,
+        xticktext=ticktext_labels_truncate(xskips, df['versioned_hash'])
     )
+
+    # For some reason annotations break everything so its added it into the
+    # title instead. Reason MIGHT be annotations_delete()...?
+    title_format(fig, dict(
+        title_text=bold(title + "    -   ") + f' {limit} hashes'))
 
     fig.update_layout(xaxis_tickangle=45)
 
