@@ -1,13 +1,14 @@
-from creates import getNodesTimestamp, current_timestamp_get
+from creates import current_timestamp_get
 # bar
-from bar.blobs_by_slot import (blobs_per_slot_create)
-from bar.slots_by_blob_count import (slots_by_blob_count_create)
-from bar.first_last_difference import (first_last_difference_create)
+from plots.bar.blobs_by_slot import (blobs_per_slot_create)
+from plots.bar.slots_by_blob_count import (slots_by_blob_count_create)
+from plots.bar.first_last_difference import (first_last_difference_create)
 # box
 
 # area
-from area.blob_hash_repetitions import (blob_hash_repetitions_create)
-from area.average_blob_arrival import (average_blob_arrival_create)
+from plots.area.blob_hash_repetitions import (blob_hash_repetitions_create)
+from plots.area.average_blob_arrival import (average_blob_arrival_create)
+from plots.area.blob_size_used_per_blob import (blob_size_used_per_blob_create)
 
 from typing import List, Callable
 
@@ -17,7 +18,8 @@ blob_functions = [
     slots_by_blob_count_create,
     first_last_difference_create,
     blob_hash_repetitions_create,
-    average_blob_arrival_create
+    average_blob_arrival_create,
+    blob_size_used_per_blob_create
 ]
 
 builder_functions = blob_functions
