@@ -8,7 +8,6 @@ import sys
 
 def main():
     n_args = sys.argv.__len__()
-    args = sys.argv
     list_testing_mode = False
     testing_functions = []
     options = get_options(n_args, sys.argv)
