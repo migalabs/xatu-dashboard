@@ -51,7 +51,7 @@ def histogramCreate(
 
     fig.update_yaxes(
         title_text=bold(ytitle),
-        title_font_size=15
+        title_font_size=15,
         title_standoff=10,
         showgrid=True,
         gridcolor='#f9f9f9',
