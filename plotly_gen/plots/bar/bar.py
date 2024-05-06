@@ -9,7 +9,7 @@ from utils import (
 
 def bar_create_fig(
     df, x, y, title, color_discrete_sequence, thickness, hovertemplate,
-    ytitle, xtitle, xskips, yskips
+    ytitle, xtitle, xskips, yskips, title_annotation=None
 ):
     fig = px.bar(
         df,
@@ -26,10 +26,10 @@ def bar_create_fig(
         width=thickness,
     )
 
-    title_format(fig, dict(
-            title_text=bold(title)
-        )
-    )
+    if (title_annotation):
+        title = bold(title) + "    -   " + title_annotation
+
+    title_format(fig, dict(title_text=title))
 
     font_info = dict(
         family='Lato',

@@ -12,7 +12,7 @@ BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
 def first_last_difference_create(client):
     plotname = 'first-last-timediff'
     title = 'Time difference between first and last blob'
-    limit = 30
+    slot_limit = 30
 
     query = f'''
                 select
@@ -24,7 +24,7 @@ def first_last_difference_create(client):
                 group by slot
                 having count(distinct blob_index) >= 2
                 order by slot desc
-                limit {limit}
+                limit {slot_limit}
             '''
 
     df = df_clickhouse_create(
@@ -40,7 +40,8 @@ def first_last_difference_create(client):
         color_discrete_sequence='#d5c3fc', thickness=0.5,
         hovertemplate=f'{bold("time difference")}: %{{y:.0f}}ms<br>{bold("slot")}: %{{x:,}}',
         ytitle='Time difference', xtitle='Slots',
-        xskips=20, yskips=(df['time_diff_ms'].max() / 5)
+        xskips=20, yskips=(df['time_diff_ms'].max() / 5),
+        title_annotation=f' Latest {(225 * slot_limit)} epochs ({slot_limit} days)'
     )
 
     tickvals = fig['layout']['yaxis']['tickvals']

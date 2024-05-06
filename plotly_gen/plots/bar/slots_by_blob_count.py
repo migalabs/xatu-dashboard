@@ -9,7 +9,7 @@ BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
 def slots_by_blob_count_create(client):
     plotname = 'slots-by-blob-count'
     title = 'Slots by blob count'
-    limit = 7200
+    slot_limit = 7200
 
     query = f'''
                 select slot, count(distinct blob_index) as blob_count
@@ -17,14 +17,16 @@ def slots_by_blob_count_create(client):
                 where meta_network_name = 'mainnet'
                 group by slot
                 order by slot desc
-                limit {limit}
+                limit {slot_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)
 
-    df = fill_in_gaps(df, column='slot', fill_value=0, limit=limit)
+    df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
+
+    epoch_limit = (slot_limit / 32)
 
     fig = bar_create_fig(
         df,
@@ -32,7 +34,8 @@ def slots_by_blob_count_create(client):
         color_discrete_sequence='#ff989f', thickness=0.5,
         hovertemplate=f'{bold("slots")}: %{{y:,}}<br>{bold("blobs")}: %{{x:,}}',
         ytitle='Slots', xtitle='Blob count',
-        xskips=1, yskips=(df['slot_count'].max() / 5)
+        xskips=1, yskips=(df['slot_count'].max() / 5),
+        title_annotation=f'  Latest {epoch_limit: .0f} {"epochs" if epoch_limit > 1 else "epoch"} ({slot_limit} slots)',
     )
 
     tickvals = fig['layout']['yaxis']['tickvals']
@@ -43,11 +46,6 @@ def slots_by_blob_count_create(client):
     )
 
     fig.update_traces(marker_line_color='#ff989f', marker_line_width=2)
-
-    # For some reason annotations break everything so its added it into the
-    # title instead. Reason MIGHT be annotations_delete()...?
-    title_format(fig, dict(
-        title_text=bold(title + "    -   ") + f' Latest {limit} slots'))
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
