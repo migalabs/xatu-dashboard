@@ -1,4 +1,4 @@
-from plots.area.area import area_create_fig, area_customize, fraction_clamp
+from plots.area.area import area_create_fig, area_customize
 from creates import df_clickhouse_create
 from utils import date_since
 from typing import List
@@ -17,17 +17,15 @@ def blob_size_used_per_blob_create(client):
     plotname = 'blob-size-used'
     title = 'Average used blob size per blob'
     start_time = date_since(days=1)
-    limit = 15
+    day_limit = 15
 
     query = f'''
                 select
                     toDate(event_date_time) as day,
                     avg((blob_sidecars_size-blob_sidecars_empty_size) / blob_sidecars_size * 100)  as used_blob_size
-                from file('txs_march.parquet', Parquet)
-                where meta_network_name = 'mainnet'
+                from file('txs.parquet', Parquet)
+                where meta_network_name = 'mainnet' and event_date_time > now() - interval {day_limit} day
                 group by day
-                order BY day desc
-                limit {limit}
             '''
 
     df = df_clickhouse_create(client, query, title)
@@ -44,14 +42,10 @@ def blob_size_used_per_blob_create(client):
         fig, df, title=title,
         xtitle='', ytitle='Used blob size', hovertemplate=hovertemplate,
         legend=False, percent=True, markers=False, start_time=start_time,
-        inv=False, filling=True, name='used_blob_size', rate='432000000',
-        yskips=10, xrange=[df['day'].min(), df['day'].max()]
+        inv=False, filling=True, name='used_blob_size', rate='200000000',
+        yskips=10, xrange=[df['day'].min(), df['day'].max()],
+        title_annotation=f' Latest {(225 * day_limit)} epochs ({day_limit} days)'
     )
-
-    # For some reason annotations break everything so its added it into the
-    # title instead. Reason MIGHT be annotations_delete()...?
-    title_format(fig, dict(
-        title_text=bold(title + "    -   ") + f' Last {limit} days'))
 
     fig.update_layout(xaxis_tickangle=45)
 

@@ -53,13 +53,9 @@ def blob_hash_repetitions_create(client):
         inv=False, filling=True, name='repeat_times', rate='L0.5',
         yskips=fraction_clamp(df['repeat_times'].max() / 5),
         tickvals=[i for i in range(0, len(df), xskips)], xrange=None,
-        xticktext=ticktext_labels_truncate(xskips, df['versioned_hash'])
+        xticktext=ticktext_labels_truncate(xskips, df['versioned_hash']),
+        title_annotation=f' {limit} hashes (all time)'
     )
-
-    # For some reason annotations break everything so its added it into the
-    # title instead. Reason MIGHT be annotations_delete()...?
-    title_format(fig, dict(
-        title_text=bold(title + "    -   ") + f' {limit} hashes'))
 
     fig.update_layout(xaxis_tickangle=45)
 

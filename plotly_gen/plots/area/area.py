@@ -89,7 +89,7 @@ def yaxis_format_amounts(fig, df, counts, tick_text_formatter, yskips):
 def area_customize(
     fig, df, title, ytitle, xtitle, hovertemplate, legend: bool, percent: bool,
     markers: bool, start_time: str, inv: bool, filling: bool, xrange,
-    name, rate='M1',
+    name, rate='M1', title_annotation=None,
     tick_text_formatter=lambda x: bold(f'{x:,.0f}'),
     yskips=2000,
     tickvals=None, xtickformat=bold('%B %d, %Y, %I:%M %p'),
@@ -138,13 +138,12 @@ def area_customize(
         ticktext=xticktext if (xticktext) else None
     )
 
+    if (title_annotation):
+        title = bold(title) + "    -   " + title_annotation
+
     title_format(
         fig, dict(
-            title_text=bold(title + (
-                    '' if not averages
-                    else get_avg_str(tick_text_formatter, averages)
-                )
-            )
+            title_text=title + bold('' if not averages else get_avg_str(tick_text_formatter, averages))
         )
     )
 
@@ -180,7 +179,7 @@ def fill_in_gaps(df, column, fill_value, limit=None):
     full_index = pd.Index(
         np.arange(df.index.min(), df.index.max() + 1), name=column
     )
-    df = df.reindex(full_index, fill_value=0)
+    df = df.reindex(full_index, fill_value=fill_value)
     df.reset_index(inplace=True)
 
     if (limit):

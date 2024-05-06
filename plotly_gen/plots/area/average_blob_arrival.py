@@ -1,5 +1,5 @@
 from plots.area.area import area_create_fig, area_customize, fraction_clamp, end_time
-from utils import date_since, to_unix_date_tuple
+from utils import date_since, to_unix_date_tuple, title_format
 from creates import df_clickhouse_create
 from utils import bold
 import pandas as pd
@@ -13,6 +13,7 @@ def average_blob_arrival_create(client):
     plotname = 'avg-blob-arrival'
     title = 'Average blob arrival time'
     start_time = date_since(days=1)
+    day_limit = 25
 
     query = f'''
                 select
@@ -27,10 +28,13 @@ def average_blob_arrival_create(client):
                 )
                 where rn = 1
                 group BY day
-                ORDER BY day ASC
+                order BY day desc
+                limit {day_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)
+
+    print(df)
 
     df['avg_delay_s'] = df['avg_delay_ms'] / 1000
 
@@ -48,7 +52,7 @@ def average_blob_arrival_create(client):
         start_time=start_time, inv=False, filling=True, name='avg_delay_s',
         rate='432000000', tick_text_formatter=lambda x: f'{bold(f"{x/10:,.0f}ms")}' if (x < 1) else f'{bold(f"{(x):,.0f}s")}',
         yskips=fraction_clamp(df['avg_delay_s'].max() / 5, 10),
-        xrange=[df['day'].min(), df['day'].max()]
+        xrange=[df['day'].min(), df['day'].max()], title_annotation=f' Latest {(225 * day_limit)} epochs ({day_limit} days)'
     )
 
     fig.update_layout(xaxis_tickangle=45)
