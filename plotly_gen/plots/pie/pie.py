@@ -8,19 +8,25 @@ from utils import (
 )
 
 
-def pieCreate(df, values, slices_data, colors: dict, title, hole=0.635):
+def pie_fig_create(
+    df, values: str, names: str, slices_data: str,
+    colors: dict, title: str, hole: float = 0.635,
+    hoverplate='%{label}: %{value}', title_annotation=None,
+    custom_data: list[str] = [], hole_text='TOTAL'
+):
     fig = px.pie(
         df,
         values=values,
-        names='legend_labels',
+        names=names,
         category_orders=dict(legend_labels=percentage_sort_by(df, slices_data)),
         hole=hole,
         color=slices_data,
         color_discrete_map=colors.get('color_discrete_map'),
-        color_discrete_sequence=colors.get('color_discrete_sequence')
+        color_discrete_sequence=colors.get('color_discrete_sequence'),
+        custom_data=custom_data
     )
 
-    hoverplate_update(fig, "%{label}: %{value}")
+    hoverplate_update(fig, hovertemplate=hoverplate)
 
     fig.update_traces(
         marker=dict(
@@ -37,7 +43,7 @@ def pieCreate(df, values, slices_data, colors: dict, title, hole=0.635):
     annotations_add(fig,
         [
             dict(
-                text='TOTAL',
+                text=hole_text,
                 font_color='gray',
                 x=0.5,
                 y=0.45,
@@ -60,8 +66,10 @@ def pieCreate(df, values, slices_data, colors: dict, title, hole=0.635):
             y=-0.2
         )
     )
+    if (title_annotation):
+        title = bold(title) + "   -   " + title_annotation
 
-    title_format(fig, dict(title_text=bold(title)))
+    title_format(fig, dict(title_text=title))
 
     watermark_add(fig, f'{ABS_PATH}/assets/migalabsLogo.png', 0.5, 0.33)
 
