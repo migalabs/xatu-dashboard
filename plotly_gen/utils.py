@@ -164,3 +164,19 @@ def get_avg_str(ticktextFormatter, averages):
 
 def bold(text):
     return (f'<b>{text}</b>')
+
+
+time_string_map = {
+    'month': {'amount': 6750},
+    'day': {'amount': 225},
+    'hour': {'amount': 9.375}
+}
+
+
+def get_epoch_readable_unit(epochs: float) -> str:
+    for unit, value in time_string_map.items():
+        threshold = value['amount']
+        if (epochs >= threshold):
+            converted = epochs/threshold
+            return (f'{converted:,.0f} {unit if ((converted) == 1) else unit + 's'}')
+    return ('')
