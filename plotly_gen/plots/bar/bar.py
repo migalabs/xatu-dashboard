@@ -60,7 +60,7 @@ def bar_create_fig(
         title_font_size=15,
         tickfont=font_info,
         tickvals=tickvals,
-        ticktext=[f'{bold(f"{x}")}' for x in tickvals]
+        ticktext=[f'{bold(f"{x:,.0f}")}' for x in tickvals]
     )
 
     legend_update(fig, False)

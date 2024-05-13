@@ -1,15 +1,13 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold, fill_in_gaps, title_format
-
-# todo make this into env variable
-BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
+from sessions import BLOB_SIDECAR_TABLE
+from utils import bold, fill_in_gaps, get_epoch_readable_unit
 
 
-def blobs_per_slot_create(client):
-    plotname = 'blobs-by-slot'
+def bar_blobs_per_slot_create(client):
+    plotname = 'bar_blobs-by-slot'
     title = 'Blob count per slot'
-    slot_limit = 50
+    slot_limit = 500
 
     query = f'''
                 select slot, count(distinct blob_index) as blob_count
@@ -25,19 +23,20 @@ def blobs_per_slot_create(client):
     # adding all missing slots as new rows with 0 as blob count
     df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
 
-    epoch_limit = (slot_limit / 32)
+    epochs = (slot_limit / 32)
+    readable_timeframe = get_epoch_readable_unit(epochs)
 
     fig = bar_create_fig(
         df,
         x='slot', y='blob_count',
-        title=title, color_discrete_sequence='#d9f45d', thickness=0.3,
+        title=title, color_discrete_sequence='#d9f45d', thickness=0.2,
         hovertemplate=f'{bold("slot")}: %{{x:,}}<br>{bold("blobs")}: %{{y:,}}',
         ytitle='Blob count', xtitle='Slot',
-        title_annotation=f'  Latest {epoch_limit: .1f} {"epochs" if epoch_limit > 1 else "epoch"} ({slot_limit} slots)',
-        xskips=5, yskips=1
+        title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
+        xskips=len(df)/5, yskips=1
     )
 
-    fig.update_traces(marker_line_color='#d9f45d', marker_line_width=6)
+    fig.update_traces(marker_line_color='#d9f45d', marker_line_width=1)
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 

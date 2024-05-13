@@ -1,26 +1,30 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold
-import pandas as pd
-import numpy as np
+from utils import bold, get_epoch_readable_unit
+from units import format_seconds
+from sessions import BLOB_SIDECAR_TABLE
 
 
-# todo make this into env variable
-BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
-
-
-def first_last_difference_create(client):
-    plotname = 'first-last-timediff'
+def bar_first_last_difference_create(client):
+    plotname = 'bar_first-last-timediff'
     title = 'Time difference between first and last blob'
-    slot_limit = 30
+    slot_limit = 500
 
     query = f'''
                 select
                     slot,
-                    min(propagation_slot_start_diff) min_delay_ms,
-                    max(propagation_slot_start_diff) max_delay_ms
-                from {BLOB_SIDECAR_TABLE}
-                where meta_network_name = 'mainnet'
+                    count(distinct blob_index) as blob_count,
+                    min(propagation_slot_start_diff)/1000 min,
+                    max(propagation_slot_start_diff)/1000 max,
+                    AVG(propagation_slot_start_diff)/1000 AS avg
+                from (
+                    select *,
+                           ROW_NUMBER() over (partition by block_root, versioned_hash, blob_index, slot ORDER by slot_start_date_time asc) as rn
+                    from {BLOB_SIDECAR_TABLE}
+                    where meta_network_name = 'mainnet'
+                    and propagation_slot_start_diff < 100000
+                )
+                where rn = 1
                 group by slot
                 having count(distinct blob_index) >= 2
                 order by slot desc
@@ -31,7 +35,9 @@ def first_last_difference_create(client):
         client, query, title
     )
 
-    df['time_diff_ms'] = df['max_delay_ms'] - df['min_delay_ms']
+    df['time_diff_ms'] = df['max'] - df['min']
+    epochs = (slot_limit / 32)
+    readable_timeframe = get_epoch_readable_unit(epochs)
 
     fig = bar_create_fig(
         df,
@@ -40,17 +46,18 @@ def first_last_difference_create(client):
         color_discrete_sequence='#d5c3fc', thickness=0.5,
         hovertemplate=f'{bold("time difference")}: %{{y:.0f}}ms<br>{bold("slot")}: %{{x:,}}',
         ytitle='Time difference', xtitle='Slots',
-        xskips=20, yskips=(df['time_diff_ms'].max() / 5),
-        title_annotation=f' Latest {(225 * slot_limit)} epochs ({slot_limit} days)'
+        xskips=len(df)/5, yskips=(df['time_diff_ms'].max() / 5),
+        title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
 
+    # @todo add ticktext formatting to bar_create_fig
     tickvals = fig['layout']['yaxis']['tickvals']
 
     fig.update_yaxes(
         tickvals=tickvals,
-        ticktext=[f"<b>{'{:.0f}ms'.format(x)}     </b>" for x in tickvals]
+        ticktext=[format_seconds(x) for x in tickvals]
     )
-    fig.update_traces(marker_line_color='#d5c3fc', marker_line_width=5)
+    fig.update_traces(marker_line_color='#d5c3fc', marker_line_width=2)
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 

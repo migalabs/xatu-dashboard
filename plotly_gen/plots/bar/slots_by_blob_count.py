@@ -1,15 +1,13 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold, fill_in_gaps, title_format
-
-# todo make this into env variable
-BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
+from sessions import BLOB_SIDECAR_TABLE
+from utils import bold, fill_in_gaps, title_format, get_epoch_readable_unit
 
 
-def slots_by_blob_count_create(client):
-    plotname = 'slots-by-blob-count'
+def bar_slots_by_blob_count_create(client):
+    plotname = 'bar_slots-by-blob-count'
     title = 'Slots by blob count'
-    slot_limit = 7200
+    slot_limit = 216000
 
     query = f'''
                 select slot, count(distinct blob_index) as blob_count
@@ -26,7 +24,8 @@ def slots_by_blob_count_create(client):
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
 
-    epoch_limit = (slot_limit / 32)
+    epochs = (slot_limit / 32)
+    readable_timeframe = get_epoch_readable_unit(epochs)
 
     fig = bar_create_fig(
         df,
@@ -35,14 +34,14 @@ def slots_by_blob_count_create(client):
         hovertemplate=f'{bold("slots")}: %{{y:,}}<br>{bold("blobs")}: %{{x:,}}',
         ytitle='Slots', xtitle='Blob count',
         xskips=1, yskips=(df['slot_count'].max() / 5),
-        title_annotation=f'  Latest {epoch_limit: .0f} {"epochs" if epoch_limit > 1 else "epoch"} ({slot_limit} slots)',
+        title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
     )
 
     tickvals = fig['layout']['yaxis']['tickvals']
 
     fig.update_yaxes(
         tickvals=tickvals,
-        ticktext=[f"<b>{'{:.0f}'.format(x)}     </b>" for x in tickvals]
+        ticktext=[bold(f"{'{:,.0f}'.format(x)}     ") for x in tickvals]
     )
 
     fig.update_traces(marker_line_color='#ff989f', marker_line_width=2)
