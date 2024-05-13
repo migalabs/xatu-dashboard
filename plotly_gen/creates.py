@@ -214,10 +214,16 @@ def df_prometheus_create(
     return (df)
 
 
-def df_clickhouse_create(client: Client, query, plot_name=''):
+def df_clickhouse_create(
+    client: Client, query, plot_name='',
+    percent_names=None, no_perc_labels: bool = False
+):
     current_endpoint_print(plot_name)
 
     df = client.query_dataframe(query)
+
+    if (percent_names):
+        legend_labels_percent_parse(df, percent_names, no_perc_labels)
 
     return (df)
 
