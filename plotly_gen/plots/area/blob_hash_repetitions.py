@@ -2,10 +2,8 @@ from plots.area.area import area_create_fig, area_customize, fraction_clamp
 from creates import df_clickhouse_create
 from utils import date_since
 from typing import List
+from sessions import BLOB_SIDECAR_TABLE
 from utils import bold, title_format
-
-# todo make this into env variable
-BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
 
 
 def ticktext_labels_truncate(skips, column) -> List[str]:
@@ -16,8 +14,8 @@ def ticktext_labels_truncate(skips, column) -> List[str]:
     return (ticktext)
 
 
-def blob_hash_repetitions_create(client):
-    plotname = 'blob-hash-repetitions'
+def area_blob_hash_repetitions_create(client):
+    plotname = 'area_blob-hash-repetitions'
     title = 'Blob hash repetitions'
     start_time = date_since(days=1)
     limit = 150
@@ -54,7 +52,7 @@ def blob_hash_repetitions_create(client):
         yskips=fraction_clamp(df['repeat_times'].max() / 5),
         tickvals=[i for i in range(0, len(df), xskips)], xrange=None,
         xticktext=ticktext_labels_truncate(xskips, df['versioned_hash']),
-        title_annotation=f' {limit} hashes (all time)'
+        title_annotation=f'{limit} hashes (all time)'
     )
 
     fig.update_layout(xaxis_tickangle=45)

@@ -1,19 +1,17 @@
 from plots.area.area import area_create_fig, area_customize, fraction_clamp, end_time
-from utils import date_since, to_unix_date_tuple, title_format
 from creates import df_clickhouse_create
-from utils import bold
+from utils import date_since, bold, get_epoch_readable_unit
+from sessions import BLOB_SIDECAR_TABLE
+from units import format_seconds
 import pandas as pd
 import numpy as np
 
-# todo make this into env variable
-BLOB_SIDECAR_TABLE = 'default.beacon_api_eth_v1_events_blob_sidecar'
 
-
-def average_blob_arrival_create(client):
-    plotname = 'avg-blob-arrival'
+def area_average_blob_arrival_create(client):
+    plotname = 'area_avg-blob-arrival'
     title = 'Average blob arrival time'
     start_time = date_since(days=1)
-    day_limit = 25
+    day_limit = 30
 
     query = f'''
                 select
@@ -34,8 +32,6 @@ def average_blob_arrival_create(client):
 
     df = df_clickhouse_create(client, query, title)
 
-    print(df)
-
     df['avg_delay_s'] = df['avg_delay_ms'] / 1000
 
     fig = area_create_fig(
@@ -46,13 +42,17 @@ def average_blob_arrival_create(client):
 
     hovertemplate = f'{bold("Average delay")}: %{{customdata[0]:,.2f}}s<br>{bold("Date")}: %{{x}}<extra></extra>'
 
+    epochs = (day_limit * 225)
+    readable_timeframe = get_epoch_readable_unit(epochs)
+
     area_customize(
         fig, df, title=title, xtitle='', ytitle='Delay',
         hovertemplate=hovertemplate, legend=False, percent=False, markers=True,
         start_time=start_time, inv=False, filling=True, name='avg_delay_s',
-        rate='432000000', tick_text_formatter=lambda x: f'{bold(f"{x/10:,.0f}ms")}' if (x < 1) else f'{bold(f"{(x):,.0f}s")}',
+        rate='604800000', tick_text_formatter=format_seconds,
         yskips=fraction_clamp(df['avg_delay_s'].max() / 5, 10),
-        xrange=[df['day'].min(), df['day'].max()], title_annotation=f' Latest {(225 * day_limit)} epochs ({day_limit} days)'
+        xrange=[df['day'].min(), df['day'].max()],
+        title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
 
     fig.update_layout(xaxis_tickangle=45)

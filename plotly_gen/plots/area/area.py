@@ -49,14 +49,14 @@ def area_create_fig(
     )
 
     if (color_lines):
-        fig.update_traces(
-            line=dict(color=color_lines,)
-        )
+        fig.update_traces(line=dict(color=color_lines))
 
     fig.update_layout(
         plot_bgcolor='white',
-        paper_bgcolor='white'
+        paper_bgcolor='white',
     )
+
+    fig.update_yaxes(gridcolor='#f3f3f3', linewidth=5)
 
     return (fig)
 
@@ -117,7 +117,6 @@ def area_customize(
 
     fig.update_yaxes(
         showgrid=True,
-        gridcolor='#f9f9f9',
         title_standoff=10,
         title_text=bold(ytitle),
         title_font_color='#4c5773',
