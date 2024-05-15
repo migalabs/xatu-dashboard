@@ -1,9 +1,10 @@
 from plots.pie.pie import pie_fig_create
 from creates import df_clickhouse_create, legend_labels_percent_parse
-from utils import bold, get_epoch_readable_unit, legend_update, title_format
+from utils import bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format
 from sessions import BLOB_SIDECAR_TABLE
 
 color_map = {
+    0: '#fff566',
     1: '#c0ff8c',
     2: '#c4fffd',
     3: '#a6d1ff',
@@ -28,16 +29,14 @@ def pie_slots_by_blob_count_create(client):
             '''
 
     df = df_clickhouse_create(client, query, title)
-
-    df_grouped = df.groupby('blob_count')['slot'].count().reset_index()
-    df_grouped.columns = ['blob_count', 'slots']
+    df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
+    df = df.groupby('blob_count')['slot'].count().reset_index()
+    df.columns = ['blob_count', 'slots']
     legend_labels_percent_parse(
-        df_grouped, percent_names=['blob_count', 'slots'], no_perc_labels=False
+        df, percent_names=['blob_count', 'slots'], no_perc_labels=False
     )
-    df_grouped['legend_labels'] = df_grouped.apply(
+    df['legend_labels'] = df.apply(
         lambda row: bold(f'{row['blob_count']:.0f} ({row['percentage']:.2f}%)'), axis=1)
-
-    df = df_grouped
 
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
