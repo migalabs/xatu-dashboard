@@ -3,8 +3,6 @@ from creates import df_clickhouse_create
 from utils import bold, get_epoch_readable_unit
 from units import format_kilobytes
 from sessions import BLOB_SIDECAR_TABLE, BLOCK_TABLE
-import pandas as pd
-import numpy as np
 
 color_map = {
     1: '#c0ff8c',
@@ -24,7 +22,7 @@ def box_block_size_vs_blobs_create(client):
     query = f'''
                 select
                     blob_sidecars.slot as slot,
-                    (max(block_total_bytes) / 100000) as kb_block_size,
+                    (max(block_total_bytes) / 1024) as kb_block_size,
                     count(distinct blob_index) as blob_count
                 from (
                     select *
@@ -42,13 +40,19 @@ def box_block_size_vs_blobs_create(client):
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
 
+    # h_start = f'{bold("Block size")}: '
+    # h_end = f'<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>'
+    # hovertemplate = np.select(
+    #         [df['kb_block_size'] >= 1024], [f'%{{y:.0f}}mb'], f'%{{y:.0f}}kb'
+    # )
+
     fig = box_create_fig(
         df,
         x='blob_count', y='kb_block_size',
         title=title, points='outliers', color='blob_count',
         color_discrete_map=color_map, thickness=0.5,
-        hovertemplate=f'{bold("Block size")}: %{{y:.0f}}kb<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>',
-        ytitle='Time difference', xtitle='Blobs',
+        hovertemplate=f'{bold("Block size")}: %{{y:,.0f}}kb<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>',
+        ytitle='Block Size', xtitle='Blobs',
         xskips=1, yskips=(df['kb_block_size'].max() / 5),
         ytick_text_formatter=format_kilobytes,
         title_annotation=f'Last {epochs:,.0f} epochs ({readable_timeframe})'
