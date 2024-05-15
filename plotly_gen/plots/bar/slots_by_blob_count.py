@@ -1,7 +1,7 @@
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
 from sessions import BLOB_SIDECAR_TABLE
-from utils import bold, fill_in_gaps, title_format, get_epoch_readable_unit
+from utils import bold, fill_in_gaps, get_epoch_readable_unit
 
 
 def bar_slots_by_blob_count_create(client):
