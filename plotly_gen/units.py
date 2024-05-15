@@ -8,6 +8,6 @@ def format_seconds(seconds: float) -> str:
 
 
 def format_kilobytes(kilobytes: float) -> str:
-    if (kilobytes >= 1000):
-        return (bold(f'{kilobytes / 1000:,.1f}mb'))
+    if (kilobytes >= 1024):
+        return (bold(f'{kilobytes / 1024:,.1f}mb'))
     return (bold(f'{kilobytes:,.0f}kb'))
