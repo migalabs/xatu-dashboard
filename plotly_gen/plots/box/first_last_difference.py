@@ -56,12 +56,12 @@ def box_first_last_difference_create(client):
         color_discrete_map=color_map, thickness=0.5,
         hovertemplate=f'{bold("time difference")}: %{{y:.1f}}s<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>', notched=True,
         ytitle='Time difference', xtitle='Blobs',
-        xskips=1, yskips=fraction_clamp(df['time_diff_s'].max() / 5, 5),
+        xskips=1, yskips=2,
         title_annotation=f'Last {epochs:,.0f} epochs ({readable_timeframe})',
         ytick_text_formatter=format_seconds
     )
 
-    fig.update_yaxes(autorange=True)
+    fig.update_yaxes(range=[0, 12])
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
