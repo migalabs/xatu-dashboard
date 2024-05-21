@@ -17,7 +17,7 @@ color_map = {
 }
 
 
-def box_first_last_difference_create(client):
+def first_last_difference_create(client):
     plotname = 'box_first-last-timediff'
     title = 'Time difference between first and last blob'
     slot_limit = 216000

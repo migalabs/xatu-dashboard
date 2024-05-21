@@ -14,7 +14,7 @@ color_map = {
 }
 
 
-def pie_slots_by_blob_count_create(client):
+def slots_by_blob_count_create(client):
     plotname = 'pie_slots-by-blob-count'
     title = 'Slots by blob count'
     slot_limit = 216000

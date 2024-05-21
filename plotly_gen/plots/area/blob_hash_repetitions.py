@@ -14,7 +14,7 @@ def ticktext_labels_truncate(skips, column) -> List[str]:
     return (ticktext)
 
 
-def area_blob_hash_repetitions_create(client):
+def blob_hash_repetitions_create(client):
     plotname = 'area_blob-hash-repetitions'
     title = 'Blob hash repetitions'
     start_time = date_since(days=1)

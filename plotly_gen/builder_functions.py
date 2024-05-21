@@ -1,35 +1,21 @@
 from creates import current_timestamp_get
-
-# bar
-from plots.bar.blobs_by_slot import (bar_blobs_per_slot_create)
-from plots.bar.slots_by_blob_count import (bar_slots_by_blob_count_create)
-from plots.bar.first_last_difference import (bar_first_last_difference_create)
-
-# box
-from plots.box.first_last_difference import (box_first_last_difference_create)
-from plots.box.block_size_vs_blobs import (box_block_size_vs_blobs_create)
-
-# area
-from plots.area.blob_hash_repetitions import (area_blob_hash_repetitions_create)
-from plots.area.average_blob_arrival import (area_average_blob_arrival_create)
-from plots.area.blob_size_used_per_blob import (area_blob_size_used_per_blob_create)
-
-# pie
-from plots.pie.slots_by_blob_count import (pie_slots_by_blob_count_create)
-
 from typing import List, Callable
+import plots.bar as bar
+import plots.area as area
+import plots.box as box
+import plots.pie as pie
 
 blob_functions = [
-    current_timestamp_get,                  # 1
-    bar_blobs_per_slot_create,              # 2
-    bar_slots_by_blob_count_create,         # 3
-    pie_slots_by_blob_count_create,         # 4
-    bar_first_last_difference_create,       # 5
-    box_first_last_difference_create,       # 6
-    area_blob_hash_repetitions_create,      # 7
-    area_average_blob_arrival_create,       # 8
-    area_blob_size_used_per_blob_create,    # 9
-    box_block_size_vs_blobs_create          # 10
+    current_timestamp_get,                   # 1
+    bar.blobs_per_slot_create,               # 2
+    bar.slots_by_blob_count_create,          # 3
+    pie.slots_by_blob_count_create,          # 4
+    bar.first_last_difference_create,        # 5
+    box.first_last_difference_create,        # 6
+    area.blob_hash_repetitions_create,       # 7
+    area.average_blob_arrival_create,        # 8
+    area.blob_size_used_per_blob_create,     # 9
+    box.block_size_vs_blobs_create,          # 10
 ]
 
 builder_functions = blob_functions

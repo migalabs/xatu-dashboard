@@ -4,7 +4,7 @@ from sessions import BLOB_SIDECAR_TABLE
 from utils import bold, fill_in_gaps, get_epoch_readable_unit
 
 
-def bar_blobs_per_slot_create(client):
+def blobs_per_slot_create(client):
     plotname = 'bar_blobs-by-slot'
     title = 'Blob count per slot'
     slot_limit = 500

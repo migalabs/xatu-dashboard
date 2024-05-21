@@ -14,7 +14,7 @@ color_map = {
 }
 
 
-def box_block_size_vs_blobs_create(client):
+def block_size_vs_blobs_create(client):
     plotname = 'box_block-size-vs-blobs'
     title = 'Block size and number of blobs'
     slot_limit = 216000

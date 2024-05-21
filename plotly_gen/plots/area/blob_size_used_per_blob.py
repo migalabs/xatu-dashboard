@@ -14,7 +14,7 @@ def ticktext_labels_truncate(skips, column) -> List[str]:
     return (ticktext)
 
 
-def area_blob_size_used_per_blob_create(client):
+def blob_size_used_per_blob_create(client):
     plotname = 'area_blob-size-used'
     title = 'Average used blob size per blob'
     start_time = date_since(days=1)

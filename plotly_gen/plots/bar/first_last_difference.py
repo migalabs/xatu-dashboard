@@ -5,7 +5,7 @@ from units import format_seconds
 from sessions import BLOB_SIDECAR_TABLE
 
 
-def bar_first_last_difference_create(client):
+def first_last_difference_create(client):
     plotname = 'bar_first-last-timediff'
     title = 'Time difference between first and last blob'
     slot_limit = 500

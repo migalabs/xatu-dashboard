@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 
-def area_average_blob_arrival_create(client):
+def average_blob_arrival_create(client):
     plotname = 'area_avg-blob-arrival'
     title = 'Average blob arrival time'
     start_time = date_since(days=1)
