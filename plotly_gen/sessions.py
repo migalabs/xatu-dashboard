@@ -6,9 +6,9 @@ PROM_USER = os.environ['PROM_USER']
 PROM_PASS = os.environ['PROM_PASS']
 API_KEY = os.environ['API_KEY']
 
-BLOB_SIDECAR_TABLE = 'file(\'blobs.parquet\', Parquet)'
-BLOCK_TABLE = 'file(\'blocks.parquet\', Parquet)'
-TXS_TABLE = 'file(\'txs.parquet\', Parquet)'
+BLOB_SIDECAR_TABLE = 'beacon_api_eth_v1_events_blob_sidecar'
+BLOCK_TABLE = 'beacon_api_eth_v2_beacon_block'
+TXS_TABLE = 'mempool_transaction'
 
 
 # This is for not having to create the authentication every time you fetch
