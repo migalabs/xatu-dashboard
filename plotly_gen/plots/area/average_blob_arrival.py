@@ -1,16 +1,15 @@
-from plots.area.area import area_create_fig, area_customize, fraction_clamp, end_time
-from creates import df_clickhouse_create
+from plots.area.area import (
+    area_create_fig, area_customize, fraction_clamp,
+    DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE)
 from utils import date_since, bold, get_epoch_readable_unit
+from creates import df_clickhouse_create
 from sessions import BLOB_SIDECAR_TABLE
 from units import format_seconds
-import pandas as pd
-import numpy as np
 
 
 def average_blob_arrival_create(client):
     plotname = 'area_avg-blob-arrival'
     title = 'Average blob arrival time'
-    start_time = date_since(days=1)
     day_limit = 30
 
     query = f'''
@@ -31,32 +30,34 @@ def average_blob_arrival_create(client):
             '''
 
     df = df_clickhouse_create(client, query, title)
-
     df['avg_delay_s'] = df['avg_delay_ms'] / 1000
 
+    x, y = 'day', 'avg_delay_s'
     fig = area_create_fig(
-        df, x='day', y='avg_delay_s', name='day',
-        color_discrete_map=None, markers=True, customdata='avg_delay_s',
+        df, x=x, y=y, name=x,
+        color_discrete_map=None, markers=True, customdata=y,
         color_lines='rgb(125, 149, 255)'
     )
 
-    hovertemplate = f'{bold("Average delay")}: %{{customdata[0]:,.2f}}s<br>{bold("Date")}: %{{x}}<extra></extra>'
+    hovertemplate = (
+        f'{bold("Average delay")}: %{{y:,.2f}}s<br>'
+        f'{bold("Date")}: %{{x}}<extra></extra>'
+    )
 
     epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
-
     area_customize(
-        fig, df, title=title, xtitle='', ytitle='Delay',
-        hovertemplate=hovertemplate, legend=False, percent=False, markers=True,
-        start_time=start_time, inv=False, filling=True, name='avg_delay_s',
-        rate='604800000', tick_text_formatter=format_seconds,
-        yskips=fraction_clamp(df['avg_delay_s'].max() / 5, 10),
-        xrange=[df['day'].min(), df['day'].max()],
+        df, fig, title=title,
+        x_col_title=(x, ''),
+        y_col_title=(y, 'Delay'),
+        yrange=[0, df[y].max() + 0.2],
+        hovertemplate=hovertemplate,
+        yskips=1, xskips=FIVE_DAYS_RATE,
+        xtickformat=DEFAULT_DATE_FORMAT,
+        ytickformat=format_seconds,
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
-
     fig.update_layout(xaxis_tickangle=45)
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}
