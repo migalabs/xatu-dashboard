@@ -58,6 +58,11 @@ def annotations_add(
     )
 
 
+def annotations_delete(fig):
+    for annotation in fig['layout']['annotations']:
+        annotation['text'] = ''
+
+
 def hoverplate_update(fig, hovertemplate, hoverlabel: dict = hoverlabel_default):
     hoverlabel_def = hoverlabel_default.copy()
     hoverlabel_def.update(hoverlabel)
@@ -138,7 +143,6 @@ def fill_in_gaps(df, column, fill_value, limit=None):
     full_index = pd.Index(np.arange(df.index.min(), df.index.max() + 1), name=column)
     df = df.reindex(full_index, fill_value=0)
     df.reset_index(inplace=True)
-
     if (limit):
         df = df.tail(limit)
         df.reset_index(inplace=True)
@@ -180,3 +184,12 @@ def get_epoch_readable_unit(epochs: float) -> str:
             converted = epochs/threshold
             return (f'{converted:,.0f} {unit if ((converted) == 1) else unit + 's'}')
     return ('')
+
+
+def fraction_clamp(fraction, clamp=200):
+    smaller = int(fraction / clamp) * clamp
+    bigger = smaller + clamp
+    if ((fraction - smaller) > (bigger - fraction)):
+        return (bigger)
+    else:
+        return (1 if (smaller == 0) else smaller)
