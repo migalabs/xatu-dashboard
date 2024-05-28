@@ -1,6 +1,7 @@
-from plots.pie.pie import pie_fig_create
+from utils import (
+    bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format)
 from creates import df_clickhouse_create, legend_labels_percent_parse
-from utils import bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format
+from plots.pie.pie import pie_fig_create
 from sessions import BLOB_SIDECAR_TABLE
 
 color_map = {
