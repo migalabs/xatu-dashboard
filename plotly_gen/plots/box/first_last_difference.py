@@ -1,12 +1,8 @@
-from plots.box.box import box_create_fig
-from plots.area.area import fraction_clamp
-from units import format_seconds
-import plotly.graph_objects as go
-from creates import df_clickhouse_create
 from utils import bold, get_epoch_readable_unit
+from creates import df_clickhouse_create
+from plots.box.box import box_create_fig
 from sessions import BLOB_SIDECAR_TABLE
-import pandas as pd
-import numpy as np
+from units import format_seconds
 
 color_map = {
     2: '#c4fffd',

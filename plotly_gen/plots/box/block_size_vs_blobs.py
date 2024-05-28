@@ -1,8 +1,8 @@
+from sessions import BLOB_SIDECAR_TABLE, BLOCK_TABLE
+from utils import bold, get_epoch_readable_unit
 from plots.box.box import box_create_fig
 from creates import df_clickhouse_create
-from utils import bold, get_epoch_readable_unit
 from units import format_kilobytes
-from sessions import BLOB_SIDECAR_TABLE, BLOCK_TABLE
 
 color_map = {
     1: '#c0ff8c',

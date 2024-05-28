@@ -25,7 +25,6 @@ def blobs_per_slot_create(client):
 
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
-
     fig = bar_create_fig(
         df,
         x='slot', y='blob_count',
@@ -35,9 +34,7 @@ def blobs_per_slot_create(client):
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
         xskips=len(df)/5, yskips=1
     )
-
     fig.update_traces(marker_line_color='#d9f45d', marker_line_width=1)
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}

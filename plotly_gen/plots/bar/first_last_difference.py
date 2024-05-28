@@ -1,8 +1,8 @@
+from utils import bold, get_epoch_readable_unit
 from plots.bar.bar import bar_create_fig
 from creates import df_clickhouse_create
-from utils import bold, get_epoch_readable_unit
-from units import format_seconds
 from sessions import BLOB_SIDECAR_TABLE
+from units import format_seconds
 
 
 def first_last_difference_create(client):
