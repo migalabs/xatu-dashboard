@@ -38,3 +38,4 @@ def blobs_per_slot_create(client):
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}
+
