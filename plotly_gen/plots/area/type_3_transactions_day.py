@@ -16,7 +16,8 @@ def day_type_3_transactions_per_block_create(client):
                         select *,
                         ROW_NUMBER() OVER (PARTITION BY block_root, versioned_hash, blob_index ORDER BY slot_start_date_time ASC) AS rn
                         from {BLOB_SIDECAR_TABLE}
-                        and where propagation_slot_start_diff < 100000
+                        where propagation_slot_start_diff < 100000
+                        and meta_network_name = 'mainnet'
                 )
                 select
                     slot,
@@ -38,7 +39,7 @@ def day_type_3_transactions_per_block_create(client):
     client.execute('SET max_memory_usage = 16106127360')
     df = df_clickhouse_create(client, query, title)
     x, y = 'day', 'tx_count'
-
+    print(df)
     fig = area_create_fig(
         df, x=x, y=y, name='type',
         color_discrete_map=None, markers=True, customdata='slot',

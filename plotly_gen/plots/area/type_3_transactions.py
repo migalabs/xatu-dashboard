@@ -16,7 +16,8 @@ def type_3_transactions_per_block_create(client):
                         SELECT *,
                         ROW_NUMBER() OVER (PARTITION BY block_root, versioned_hash, blob_index ORDER BY slot_start_date_time ASC) AS rn
                         FROM {BLOB_SIDECAR_TABLE}
-                        WHERE propagation_slot_start_diff < 100000
+                        where propagation_slot_start_diff < 100000
+                        and meta_network_name = 'mainnet'
                     )
                 select
                     slot,
@@ -30,13 +31,15 @@ def type_3_transactions_per_block_create(client):
                      ) as mainnet_txs
                 inner join ranked_entries
                 on mainnet_txs.blob_hashes = ranked_entries.versioned_hash
-                where rn = 1 and toDate(slot_start_date_time) > now() - interval {day_limit} day
+                where rn = 1
+                and toDate(slot_start_date_time) > now() - interval {day_limit} day
                 group by slot, type
                 limit {day_limit}
             '''
 
     client.execute('SET max_memory_usage = 16106127360')
     df = df_clickhouse_create(client, query, title)
+    print(df)
     x, y = 'slot', 'tx_count'
     fig = area_create_fig(
         df, x=x, y=y, name='type',
