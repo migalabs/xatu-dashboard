@@ -1,9 +1,9 @@
 from plots.area.area import (
-    area_create_fig, area_customize, fraction_clamp,
+    area_create_fig, area_customize,
     DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE)
-from utils import bold, get_epoch_readable_unit
-from sessions import BLOB_SIDECAR_TABLE, TXS_TABLE
-from creates import df_clickhouse_create
+from utils import bold, get_epoch_readable_unit, fraction_clamp
+from clickhouse import BLOB_SIDECAR_TABLE, TXS_TABLE
+from df_manip import df_clickhouse_create
 
 
 def day_type_3_transactions_per_block_create(client):
@@ -38,13 +38,6 @@ def day_type_3_transactions_per_block_create(client):
 
     client.execute('SET max_memory_usage = 16106127360')
     df = df_clickhouse_create(client, query, title)
-    x, y = 'day', 'tx_count'
-    print(df)
-    fig = area_create_fig(
-        df, x=x, y=y, name='type',
-        color_discrete_map=None, markers=True, customdata='slot',
-        color_lines='rgb(165, 255, 97)'
-    )
 
     hovertemplate = (
         f'{bold("Type 3 transactions")}: %{{y:,.0f}}<br>'
@@ -53,10 +46,17 @@ def day_type_3_transactions_per_block_create(client):
     )
     epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
+    x, y = 'day', 'tx_count'
+
+    fig = area_create_fig(
+        df, x=x, y=y, color='type',
+        color_discrete_map=None, markers=True, customdata='slot',
+        line_color='rgb(165, 255, 97)'
+    )
     area_customize(
         df, fig, title=title,
-        x_and_title_tuple=(x, ''),
-        y_and_title_tuple=(y, 'Type 3 transactions'),
+        x_axis_info=(x, ''),
+        y_axis_info=(y, 'Type 3 transactions'),
         xrange=[df[x].min(), df[x].max()],
         yrange=[0, df[y].max() + 5],
         hovertemplate=hovertemplate,
@@ -64,9 +64,7 @@ def day_type_3_transactions_per_block_create(client):
         xskips=FIVE_DAYS_RATE, xtickformat=DEFAULT_DATE_FORMAT,
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
-
     fig.update_layout(xaxis_tickangle=45)
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}

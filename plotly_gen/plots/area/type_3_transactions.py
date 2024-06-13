@@ -1,9 +1,10 @@
 from plots.area.area import (
-    area_create_fig, area_customize, fraction_clamp,
+    area_create_fig, area_customize,
     DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE)
-from utils import date_since, bold, get_epoch_readable_unit
-from sessions import BLOB_SIDECAR_TABLE, TXS_TABLE
-from creates import df_clickhouse_create
+from utils import (
+    date_since, bold, fraction_clamp, get_epoch_readable_unit)
+from clickhouse import BLOB_SIDECAR_TABLE, TXS_TABLE
+from df_manip import df_clickhouse_create
 
 
 def type_3_transactions_per_block_create(client):
@@ -39,13 +40,6 @@ def type_3_transactions_per_block_create(client):
 
     client.execute('SET max_memory_usage = 16106127360')
     df = df_clickhouse_create(client, query, title)
-    print(df)
-    x, y = 'slot', 'tx_count'
-    fig = area_create_fig(
-        df, x=x, y=y, name='type',
-        color_discrete_map=None, markers=True, customdata='slot',
-        color_lines='rgb(92, 255, 92)'
-    )
 
     hovertemplate = (
         f'{bold("Type 3 transactions")}: %{{y:,.0f}}<br>'
@@ -53,17 +47,23 @@ def type_3_transactions_per_block_create(client):
     )
     epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
+    x, y = 'slot', 'tx_count'
+
+    fig = area_create_fig(
+        df, x=x, y=y, color='type',
+        color_discrete_map=None, markers=True, customdata='slot',
+        line_color='rgb(92, 255, 92)'
+    )
     area_customize(
         df, fig, title=title,
-        x_and_title_tuple=(x, 'Slot number'),
-        y_and_title_tuple=(y, 'Type 3 transactions'),
+        x_axis_info=(x, 'Slot number'),
+        y_axis_info=(y, 'Type 3 transactions'),
         yrange=[0, df[y].max() + 5],
         hovertemplate=hovertemplate,
         yskips=fraction_clamp(df[y].max() / 7, 10),
         xskips=None, xtickformat=',',
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}
