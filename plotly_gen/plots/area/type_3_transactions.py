@@ -55,7 +55,8 @@ def type_3_transactions_per_block_create(client):
     readable_timeframe = get_epoch_readable_unit(epochs)
     area_customize(
         df, fig, title=title,
-        x_col_title=(x, 'Slot number'), y_col_title=(y, 'Type 3 transactions'),
+        x_and_title_tuple=(x, 'Slot number'),
+        y_and_title_tuple=(y, 'Type 3 transactions'),
         yrange=[0, df[y].max() + 5],
         hovertemplate=hovertemplate,
         yskips=fraction_clamp(df[y].max() / 7, 10),
