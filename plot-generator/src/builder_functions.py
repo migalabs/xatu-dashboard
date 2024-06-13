@@ -4,20 +4,17 @@ import plots.bar as bar
 import plots.area as area
 import plots.box as box
 import plots.pie as pie
-import plots.scatter as scatter
 
 blob_functions = [
-    get_current_timestamp,                                      # 1 timestamp
-    scatter.blobs_per_slot_create,                              # 2 scatter_blobs-by-slot
-    bar.slots_by_blob_count_create,                             # 3 bar_slots-by-blob-count
-    pie.slots_by_blob_count_create,                             # 4 pie_slots-by-blob-count
-    area.average_blob_arrival_create,                           # 5 area_avg-blob-arrival
-    box.first_last_difference_create,                           # 7 box_first-last-timediff
-    area.blob_hash_repetitions_create,                          # 8 area_blob-hash-repetitions
-    area.blob_size_used_per_blob_create,                        # 9 area_blob-size-used
-    box.block_size_vs_blobs_create,                             # 10 box_block-size-vs-blobs
-    scatter.day_type_3_transactions_per_block_create,           # 12 scatter_day-type-3-transactions
-    pie.missed_blocks_after_block_with_blobs,                   # 13 pie_missed-after-blob-count
+    get_current_timestamp,                      # 1 timestamp
+    bar.slots_by_blob_count_create,             # 2 bar_slots-by-blob-count
+    pie.slots_by_blob_count_create,             # 3 pie_slots-by-blob-count
+    area.average_blob_arrival_create,           # 4 area_avg-blob-arrival
+    box.first_last_difference_create,           # 5 box_first-last-timediff
+    area.blob_size_used_per_blob_create,        # 6 area_blob-size-used
+    box.block_size_vs_blobs_create,             # 7 box_block-size-vs-blobs
+    pie.missed_blocks_after_block_with_blobs,   # 8 pie_missed-after-blob-count
+    area.blob_hash_repetitions_create,          # 9 area_blob-hash-repetitions
 ]
 
 builder_functions = blob_functions
