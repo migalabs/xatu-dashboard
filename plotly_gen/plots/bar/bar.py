@@ -1,22 +1,32 @@
 import plotly.express as px
 import numpy as np
+from utils import set_default_legend_style
 from export import ABS_PATH
 from utils import (
     hoverplate_update, title_format,
     legend_update, watermark_add, bold
 )
+from axis_tools import format_y_axis, format_x_axis
 
 
 def bar_create_fig(
-    df, x, y, title, color_discrete_sequence, thickness, hovertemplate,
-    ytitle, xtitle, xskips, yskips, title_annotation=None
+    df, title,
+    x_axis_info: tuple, y_axis_info: tuple,
+    color_discrete_sequence: list[str], thickness, hovertemplate,
+    xskips: float, yskips: float, title_annotation=None, color=None,
+    show_legend: bool = False, customdata: list[str] = [],
+    barmode: str = 'overlay', margin: int = 15
 ):
+    x, y = x_axis_info[0], y_axis_info[0]
     fig = px.bar(
         df,
         x=x,
         y=y,
+        color=color,
         title=title,
-        color_discrete_sequence=[color_discrete_sequence]
+        color_discrete_sequence=color_discrete_sequence,
+        custom_data=customdata,
+        barmode=barmode
     )
 
     hoverplate_update(fig, hovertemplate)
@@ -37,33 +47,13 @@ def bar_create_fig(
         size=12
     )
 
-    tickvals = [x for x in np.arange(0, df[y].max() + 1, yskips)]
+    format_y_axis(df, fig, y_axis_info, yskips, lambda y: bold(f"{y:,.0f}"))
+    format_x_axis(df, fig, x_axis_info, xskips, lambda x: bold(f"{x}"))
 
-    fig.update_yaxes(
-        title_text=bold(ytitle),
-        title_font_color='#4c5773',
-        title_font_family='Lato',
-        gridcolor='#f9f9f9',
-        showgrid=True,
-        title_font_size=15,
-        tickfont=font_info,
-        tickvals=tickvals,
-        ticktext=[f"<b>{'{:,}'.format(x)}     </b>" for x in tickvals]
-    )
-
-    tickvals = df[x] if (not xskips) else [x for x in np.arange(df[x].min(), df[x].max() + 1, xskips)]
-
-    fig.update_xaxes(
-        title_text=bold(xtitle),
-        title_font_color='#4c5773',
-        title_font_family='Lato',
-        title_font_size=15,
-        tickfont=font_info,
-        tickvals=tickvals,
-        ticktext=[f'{bold(f"{x:,.0f}")}' for x in tickvals]
-    )
-
-    legend_update(fig, False)
+    if (show_legend):
+        set_default_legend_style(fig)
+    else:
+        legend_update(fig, False)
 
     fig.update_layout(
         plot_bgcolor='white',
@@ -73,5 +63,5 @@ def bar_create_fig(
     watermark_add(
         fig, file=(f'{ABS_PATH}/assets/migalabsLogo.png'), x=0.5, y=0.5
     )
-
+    fig.update_layout(margin_pad=margin)
     return (fig)

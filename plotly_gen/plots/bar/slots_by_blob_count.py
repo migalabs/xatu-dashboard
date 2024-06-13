@@ -1,7 +1,9 @@
-from utils import bold, fill_in_gaps, get_epoch_readable_unit
+from utils import (
+    bold, fill_in_gaps, get_epoch_readable_unit,
+    fraction_clamp)
 from plots.bar.bar import bar_create_fig
-from creates import df_clickhouse_create
-from sessions import BLOB_SIDECAR_TABLE
+from df_manip import df_clickhouse_create
+from clickhouse import BLOB_SIDECAR_TABLE
 
 
 def slots_by_blob_count_create(client):
@@ -24,28 +26,23 @@ def slots_by_blob_count_create(client):
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
 
+    hovertemplate = (
+        f'{bold("Slots")}: %{{y:,.0f}}<br>'
+        f'{bold("Blob count")}: %{{y:,.0f}}<extra></extra>'
+    )
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
+    x, y = 'blob_count', 'slot_count'
 
     fig = bar_create_fig(
-        df,
-        x='blob_count', y='slot_count', title=title,
-        color_discrete_sequence='#ff989f', thickness=0.5,
-        hovertemplate=f'{bold("slots")}: %{{y:,}}<br>{bold("blobs")}: %{{x:,}}',
-        ytitle='Slots', xtitle='Blob count',
-        xskips=1, yskips=(df['slot_count'].max() / 5),
+        df, title=title,
+        x_axis_info=(x, 'Blob count'),
+        y_axis_info=(y, 'Slots'),
+        color_discrete_sequence=['#ff989f'], thickness=0.5,
+        hovertemplate=hovertemplate,
+        xskips=1, yskips=fraction_clamp(df[y].max()/len(df), 1000),
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
     )
-
-    tickvals = fig['layout']['yaxis']['tickvals']
-
-    fig.update_yaxes(
-        tickvals=tickvals,
-        ticktext=[bold(f"{'{:,.0f}'.format(x)}     ") for x in tickvals]
-    )
-
-    fig.update_traces(marker_line_color='#ff989f', marker_line_width=2)
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}

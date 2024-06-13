@@ -1,7 +1,7 @@
 from utils import bold, get_epoch_readable_unit
 from plots.bar.bar import bar_create_fig
-from creates import df_clickhouse_create
-from sessions import BLOB_SIDECAR_TABLE
+from df_manip import df_clickhouse_create
+from clickhouse import BLOB_SIDECAR_TABLE
 from units import format_seconds
 
 
@@ -31,21 +31,23 @@ def first_last_difference_create(client):
                 limit {slot_limit}
             '''
 
-    df = df_clickhouse_create(
-        client, query, title
-    )
-
+    df = df_clickhouse_create(client, query, title)
     df['time_diff_ms'] = df['max'] - df['min']
+
+    hovertemplate = (
+        f'{bold("Time difference")}: %{{y:,.0f}}ms<br>'
+        f'{bold("Slot")}: %{{x:,.0f}}<extra></extra>'
+    )
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
+    x, y = 'slot', 'time_diff_ms'
 
     fig = bar_create_fig(
-        df,
-        x='slot', y='time_diff_ms',
-        title=title,
-        color_discrete_sequence='#d5c3fc', thickness=0.5,
-        hovertemplate=f'{bold("time difference")}: %{{y:.0f}}ms<br>{bold("slot")}: %{{x:,}}',
-        ytitle='Time difference', xtitle='Slots',
+        df, title=title,
+        x_axis_info=(x, 'Slots'),
+        y_axis_info=(y, 'Time difference'),
+        color_discrete_sequence=['#d5c3fc'], thickness=0.5,
+        hovertemplate=hovertemplate,
         xskips=len(df)/5, yskips=(df['time_diff_ms'].max() / 5),
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
