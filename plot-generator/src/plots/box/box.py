@@ -19,8 +19,7 @@ def box_create_fig(
     ytickformat=lambda y: bold(f'{y:,.0f}'),
     yrange: list[float] = None, xrange: list[float] = None,
     #  quartilemethod = "exclusive", "inclusive" or "linear",
-    title_annotation=None, ytick_text_formatter=lambda y: bold(f'{y:,.0f}'),
-    margin: int = 15
+    title_annotation=None, margin: int = 15
 ):
     fig = px.box(
         df,

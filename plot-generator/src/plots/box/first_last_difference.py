@@ -60,7 +60,7 @@ def first_last_difference_create(client):
         hovertemplate=hovertemplate, notched=True,
         xskips=1, yskips=2,
         title_annotation=f'Last {epochs:,.0f} epochs ({readable_timeframe})',
-        ytick_text_formatter=format_seconds
+        ytickformat=format_seconds, xtickformat=','
     )
 
     fig.update_yaxes(range=[0, 12])
