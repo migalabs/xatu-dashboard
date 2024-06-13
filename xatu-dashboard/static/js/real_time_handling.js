@@ -1,6 +1,6 @@
 function checkForUpdates() {
     $.ajax({
-        url: '/node_metrics',
+        url: '/',
         type: 'GET',
         success: function(data) {
             var timestamp = $(data).find('#timestamp').text()
