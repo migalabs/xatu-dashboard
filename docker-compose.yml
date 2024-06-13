@@ -1,27 +1,17 @@
-version: "3.8"
+version: "3.9"
 
 networks:
   dashboards:
 
 services:
-  nginx:
-    restart: always
-    image: "nginx:latest"
-    ports:
-      - "${NGINX_PORT:-80}:5085"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    networks: [ dashboards ]
-
-
-  eth-p2p-dashboard:
+  xatu-dashboard:
     image: "eth-dashboard:latest"
     build:
-      context: ./eth-dashboard
+      context: ./xatu-dashboard
       dockerfile: Dockerfile
     volumes:
-      - ./eth-dashboard/nginx:/etc/nginx/conf.d
-      - ./eth-dashboard/templates/:/dashboard/templates/
+      - ./xatu-dashboard/nginx:/etc/nginx/conf.d
+      - ./xatu-dashboard/pages/:/dashboard/pages/
     restart: unless-stopped
     networks: [ dashboards ]
     ports:
@@ -35,8 +25,7 @@ services:
       context: ./plotly_gen
       dockerfile: Dockerfile
     volumes:
-      - ./eth-dashboard/templates/:/plotly_gen/generated
+      - ./xatu-dashboard/pages/:/plotly_gen/generated
       - ./plotly_gen/logs:/plotly_gen/logs
       - ./plotly_gen/generated_old:/plotly_gen/generated_old
       - ./.env:/plotly_gen/.env
-    network_mode: "host"
