@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Statistics of Blobs in the Etherum Network.">
+        <title>Ethereum Blob Dashboard</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+        <script src="https://cdn.plot.ly/plotly-2.25.2.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+        <link rel="stylesheet" href="/static/css/style.css">
+        <link rel="stylesheet" href="/static/css/plot.css">
+        <link rel="stylesheet" href="/static/css/color.css">
+        <link rel="stylesheet" href="/static/css/misc.css">
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+<body>
+
+<div class="splash-container">
+    <div class="splash">
+        <h1 class="splash-head jetbrains-mono-font label">Blob metrics</h1>
+        <p class="splash-subhead">
+            dashboard for the Etherum network.
+        </p>
+    </div>
+</div>
+    <!-- Plots -->
+
+<div class="content-wrapper border-2 border-gray-600">
+  <!-- ======= Timestamp ======= -->
+  <section id="timestamp" class="update centered place-content-center">
+    <h2 class="sticky mb-12 text-center border-2 border-gray-600 box jetbrains-mono-font centered">
+        All plot data retrieved <!-- timestamp -->
+    </h2>
+  </section>
+  <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8'>
+      <section id="scatter_blobs-by-slot">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="scatter_blobs-by-slot" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- scatter_blobs-by-slot -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="bar_slots-by-blob-count">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="bar_slots-by-blob-count" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- bar_slots-by-blob-count -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pie_slots-by-blob-count">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="pie_slots-by-blob-count" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- pie_slots-by-blob-count -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="area_avg-blob-arrival">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="area_avg-blob-arrival" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- area_avg-blob-arrival -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="box_first-last-timediff">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="box_first-last-timediff" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- box_first-last-timediff -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="area_blob-hash-repetitions">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="area_blob-hash-repetitions" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- area_blob-hash-repetitions -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="area_blob-size-used">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="area_blob-size-used" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- area_blob-size-used -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="box_block-size-vs-blobs">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="box_block-size-vs-blobs" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- box_block-size-vs-blobs -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scatter_day-type-3-transactions">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="scatter_day-type-3-transactions" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- scatter_day-type-3-transactions -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pie_missed-after-blob-count">
+        <div class="container mx-auto">
+          <div class="plot container">
+            <div id="pie_missed-after-blob-count" class="centered place-content-center border-2 border-gray-600 box">
+              <!-- pie_missed-after-blob-count -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+      <div class="jetbrains-mono-font footer l-box is-center">
+          Powered by <strong>MigaLabs</strong>
+      </div>
+</div>
+  <!-- Template real-time updating -->
+  <script type="text/javascript" src="/static/js/real_time_handling.js"></script>
+
+</body>
+</html>
