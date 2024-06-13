@@ -1,7 +1,7 @@
 from utils import bold, get_epoch_readable_unit
-from creates import df_clickhouse_create
+from df_manip import df_clickhouse_create
 from plots.box.box import box_create_fig
-from sessions import BLOB_SIDECAR_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE
 from units import format_seconds
 
 color_map = {
@@ -42,16 +42,22 @@ def first_last_difference_create(client):
     df = df_clickhouse_create(client, query, title)
     df['time_diff_s'] = df['max'] - df['min']
 
+    hovertemplate = (
+        f'{bold("Time difference")}: %{{y:,.1f}}s<br>'
+        f'{bold("Number of blobs")}: %{{x:,.0f}}<extra></extra>'
+    )
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
+    x, y = 'blob_count', 'time_diff_s'
 
     fig = box_create_fig(
         df,
-        x='blob_count', y='time_diff_s', color='blob_count',
+        x_axis_info=(x, 'Blob count'),
+        y_axis_info=(y, 'Time difference'),
+        color=x,
         title=title, points='outliers', quartilemethod='exclusive',
         color_discrete_map=color_map, thickness=0.5,
-        hovertemplate=f'{bold("time difference")}: %{{y:.1f}}s<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>', notched=True,
-        ytitle='Time difference', xtitle='Blobs',
+        hovertemplate=hovertemplate, notched=True,
         xskips=1, yskips=2,
         title_annotation=f'Last {epochs:,.0f} epochs ({readable_timeframe})',
         ytick_text_formatter=format_seconds

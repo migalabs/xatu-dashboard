@@ -1,6 +1,7 @@
 import plotly.express as px
 import numpy as np
 from export import ABS_PATH
+from axis_tools import format_y_axis, format_x_axis
 from utils import (
     hoverplate_update, title_format,
     legend_update, watermark_add, bold
@@ -8,16 +9,23 @@ from utils import (
 
 
 def box_create_fig(
-    df, x, y, title, color_discrete_map, thickness, hovertemplate,
-    ytitle, xtitle, xskips, yskips, color=None, quartilemethod=None,
-    points=None, notched=False, boxmode='group',
+    df,  title,
+    x_axis_info: tuple,
+    y_axis_info: tuple, color_discrete_map: list[str],
+    thickness: float, hovertemplate: str,
+    xskips: float, yskips: float, color=None, quartilemethod=None,
+    points: str = '', notched: bool = False, boxmode: str = 'group',
+    xtickformat=lambda x: bold(f'{x:,.0f}'),
+    ytickformat=lambda y: bold(f'{y:,.0f}'),
+    yrange: list[float] = None, xrange: list[float] = None,
     #  quartilemethod = "exclusive", "inclusive" or "linear",
-    title_annotation=None, ytick_text_formatter=lambda y: bold(f'{y:,.0f}')
+    title_annotation=None, ytick_text_formatter=lambda y: bold(f'{y:,.0f}'),
+    margin: int = 15
 ):
     fig = px.box(
         df,
-        x=x,
-        y=y,
+        x=x_axis_info[0],
+        y=y_axis_info[0],
         points=points,
         title=title,
         color=color,
@@ -41,32 +49,8 @@ def box_create_fig(
         color='#4c5773',
         size=12
     )
-
-    tickvals = [x for x in np.arange(0, df[y].max() + 1, yskips)]
-
-    fig.update_yaxes(
-        title_text=bold(ytitle),
-        title_font_color='#4c5773',
-        title_font_family='Lato',
-        showgrid=True,
-        title_font_size=15,
-        tickfont=font_info,
-        tickvals=tickvals,
-        title_standoff=15,
-        ticktext=[f"{bold(ytick_text_formatter(y))}" for y in tickvals]
-    )
-
-    tickvals = df[x] if (not xskips) else [x for x in np.arange(df[x].min(), df[x].max() + 1, xskips)]
-
-    fig.update_xaxes(
-        title_text=bold(xtitle),
-        title_font_color='#4c5773',
-        title_font_family='Lato',
-        title_font_size=15,
-        tickfont=font_info,
-        tickvals=tickvals,
-        ticktext=[f'{bold(f"{x:,.0f}")}' for x in tickvals]
-    )
+    format_y_axis(df, fig, y_axis_info, yskips, ytickformat, yrange)
+    format_x_axis(df, fig, x_axis_info, xskips, xtickformat, xrange)
 
     legend_update(fig, False)
 
@@ -80,5 +64,5 @@ def box_create_fig(
     # for trace in fig.data:
     #     trace.marker = dict(outliercolor=trace.marker.line.color)
     watermark_add(fig, file=(f'{ABS_PATH}/assets/migalabsLogo.png'), x=0.5, y=0.5)
-
+    fig.update_layout(margin_pad=margin)
     return (fig)

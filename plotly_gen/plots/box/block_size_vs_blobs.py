@@ -1,7 +1,7 @@
-from sessions import BLOB_SIDECAR_TABLE, BLOCK_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE
 from utils import bold, get_epoch_readable_unit
 from plots.box.box import box_create_fig
-from creates import df_clickhouse_create
+from df_manip import df_clickhouse_create
 from units import format_kilobytes
 
 color_map = {
@@ -16,7 +16,7 @@ color_map = {
 
 def block_size_vs_blobs_create(client):
     plotname = 'box_block-size-vs-blobs'
-    title = 'Block size and number of blobs'
+    title = 'Block size and blob count'
     slot_limit = 216000
 
     query = f'''
@@ -37,33 +37,24 @@ def block_size_vs_blobs_create(client):
 
     df = df_clickhouse_create(client, query, title)
 
+    hovertemplate = (
+        f'{bold("Block size")}: %{{y:,.0f}}kb<br>'
+        f'{bold("Number of blobs")}: %{{x:,.0f}}<extra></extra>'
+    )
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
-
-    # h_start = f'{bold("Block size")}: '
-    # h_end = f'<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>'
-    # hovertemplate = np.select(
-    #         [df['kb_block_size'] >= 1024], [f'%{{y:.0f}}mb'], f'%{{y:.0f}}kb'
-    # )
+    x, y = 'blob_count', 'kb_block_size'
 
     fig = box_create_fig(
         df,
-        x='blob_count', y='kb_block_size',
+        x_axis_info=(x, 'Blob count'),
+        y_axis_info=(y, 'Block size'),
         title=title, points='outliers', color='blob_count',
         color_discrete_map=color_map, thickness=0.5,
-        hovertemplate=f'{bold("Block size")}: %{{y:,.0f}}kb<br>{bold("number of blobs")}: %{{x:,}}<extra></extra>',
-        ytitle='Block Size', xtitle='Blobs',
-        xskips=1, yskips=(df['kb_block_size'].max() / 5),
-        ytick_text_formatter=format_kilobytes,
+        hovertemplate=hovertemplate,
+        xskips=1, yskips=500,
+        ytickformat=format_kilobytes, xtickformat=',',
         title_annotation=f'Last {epochs:,.0f} epochs ({readable_timeframe})'
-    )
-
-    tickvals = fig['layout']['yaxis']['tickvals']
-
-    fig.update_yaxes(
-        tickvals=tickvals,
-        ticktext=[format_kilobytes(x) + '     ' for x in tickvals],
-        autorange=True
     )
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
