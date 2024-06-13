@@ -1,6 +1,6 @@
 import os
 
-ABS_PATH = os.path.dirname(os.path.abspath(__file__))
+ABS_PATH = os.path.dirname(os.path.abspath(__file__)) + '/..'
 
 
 # will only generate the dashboards of the specified mode
@@ -29,7 +29,6 @@ def dashboard_dict_execute(dashboards, mode='production') -> None:
         final_html = plot_get_HTML(
             divs, f'{template_path}/{filename}', replaceHandler
         )
-
         file_write(f'{save_path}/{filename}', final_html)
 
 

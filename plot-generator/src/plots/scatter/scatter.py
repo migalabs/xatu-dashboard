@@ -35,7 +35,7 @@ def scatter_create_fig(
         marginal_x=marginal_x,
         marginal_y=marginal_y,
         trendline=trendline if (trendline) else None,
-        custom_data=customdata  # @todo change this
+        custom_data=customdata
     )
     if (show_legend):
         set_default_legend_style(fig)

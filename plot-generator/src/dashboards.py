@@ -1,13 +1,10 @@
-from builder_functions import (blob_functions, get_test_functions)
+from builder_functions import blob_functions
 from creates import notice_print
-from sessions import (
-    session_create, clickhouse_client_init,
-    PROM_USER, PROM_PASS, API_KEY
-)
+from clickhouse import clickhouse_client_init
 
 dashboard_dict: dict = {
     'blob': {
-        'mode': 'production',
+        'mode': 'production',  # will insert depending on the names
         'template': 'blob.html',
         'function_array': blob_functions,
         'arguments': clickhouse_client_init()
@@ -24,7 +21,7 @@ dashboard_dict: dict = {
     #     'arguments': None
     # },
     'dev': {
-        'mode': 'list testing',
+        'mode': 'list testing',  # will insert all outputs into the same div
         'template': 'testing.html',
         'function_array': [],
         'arguments': clickhouse_client_init()

@@ -1,8 +1,8 @@
 FROM python:3.12.0rc2-alpine3.18
 
-COPY . /plotly_gen
+COPY . /plot-generator
 
-WORKDIR /plotly_gen
+WORKDIR /plot-generator
 
 RUN apk add bash gcc musl-dev g++ util-linux
 
@@ -12,4 +12,4 @@ RUN pip install -U python-dotenv
 
 RUN apk add --update busybox-suid
 
-CMD crontab /plotly_gen/cron/jobs && crontab -l && python3 /plotly_gen/main.py -t 1 2 3 4 5 6 7 8 9 10 11 12; crond -f
+CMD crontab /plot-generator/cron/jobs && crontab -l && python3 /plot-generator/src/main.py; crond -f

@@ -1,3 +1,0 @@
-0 2,8,14,20 * * * rm -r /plotly_gen/generated_old/*; cp -r /plotly_gen/generated/* /plotly_gen/generated_old; python3 /plotly_gen/main.py -t 1 2 3 4 5 6 7 8 9 10 11 12 >> /plotly_gen/logs/logs.txt 2>&1; ls -l /plotly_gen/generated_old /plotly_gen/generated >> /plotly_gen/logs/logs.txt 2>&1
-0 0 */2 * * rm /plotly_gen/logs/logs.txt
-50 * * * * rm /plotly_gen/logs/logs_realtime.txt

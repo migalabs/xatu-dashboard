@@ -19,13 +19,13 @@ services:
     environment:
       - WEB_BASE_ENDP=${WEB_BASE_ENDP}
 
-  plotly-generator:
+  plot-generator:
     restart: unless-stopped
     build:
-      context: ./plotly_gen
+      context: ./plot-generator
       dockerfile: Dockerfile
     volumes:
-      - ./xatu-dashboard/pages/:/plotly_gen/generated
-      - ./plotly_gen/logs:/plotly_gen/logs
-      - ./plotly_gen/generated_old:/plotly_gen/generated_old
-      - ./.env:/plotly_gen/.env
+      - ./xatu-dashboard/pages/:/plot-generator/generated
+      - ./plot-generator/logs:/plot-generator/logs
+      - ./plot-generator/generated_old:/plot-generator/generated_old
+      - ./.env:/plot-generator/.env
