@@ -29,3 +29,4 @@ services:
       - ./plot-generator/logs:/plot-generator/logs
       - ./plot-generator/generated_old:/plot-generator/generated_old
       - ./.env:/plot-generator/.env
+    network_mode: host
