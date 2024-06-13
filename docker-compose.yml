@@ -1,0 +1,32 @@
+version: "3.9"
+
+networks:
+  dashboards:
+
+services:
+  xatu-dashboard:
+    image: "eth-dashboard:latest"
+    build:
+      context: ./xatu-dashboard
+      dockerfile: Dockerfile
+    volumes:
+      - ./xatu-dashboard/nginx:/etc/nginx/conf.d
+      - ./xatu-dashboard/pages/:/dashboard/pages/
+    restart: unless-stopped
+    networks: [ dashboards ]
+    ports:
+      - "${ETH_DASHBOARD_PORT:-5070}:5085"
+    environment:
+      - WEB_BASE_ENDP=${WEB_BASE_ENDP}
+
+  plot-generator:
+    restart: unless-stopped
+    build:
+      context: ./plot-generator
+      dockerfile: Dockerfile
+    volumes:
+      - ./xatu-dashboard/pages/:/plot-generator/generated
+      - ./plot-generator/logs:/plot-generator/logs
+      - ./plot-generator/generated_old:/plot-generator/generated_old
+      - ./.env:/plot-generator/.env
+    network_mode: host

@@ -1,0 +1,25 @@
+:root {
+    --black: #1D1E20;
+    --red: #CC6767;
+    --green: #B4BC68;
+    --yellow: #F1C675;
+    --blue: #81A3BF;
+    --magenta: #B394BA;
+    --cyan: #8ABEB7;
+    --white: #C5C9C7;
+    --dblue: #164aba;
+    --darkblue: #34495e;
+    --bblack: #666666;
+    --bred: #D44F53;
+    --bgreen: #B8CB4A;
+    --byellow: #E6C546;
+    --bblue: #7AA6DA;
+    --bmagenta: #C297D9;
+    --bcyan: #70C0B1;
+    --bwhite: #EAEBEB;
+    --main-width: 950px;
+    --width: 950px;
+    --width-left: 170px;
+    --width-right: 782px;
+    text-rendering: optimizeSpeed;
+}
