@@ -1,3 +1,3 @@
-0 2,8,14,20 * * * rm -r /plot-generator/generated_backup/*; cp -r /plot-generator/generated/* /plot-generator/generated_backup; python3 /plot-generator/src/main.py >> /plot-generator/logs/logs.txt 2>&1; ls -l /plot-generator/generated_backup /plot-generator/generated >> /plot-generator/logs/logs.txt 2>&1
-0 0 */2 * * rm /plot-generator/logs/logs.txt
-50 * * * * rm /plot-generator/logs/logs_realtime.txt
+0 2,8,14,20 * * * rm -rf /plot-generator/generated_backup/*; cp -r /plot-generator/generated/* /plot-generator/generated_backup; python3 /plot-generator/src/main.py >> /plot-generator/logs/logs.txt 2>&1; ls -l /plot-generator/generated_backup /plot-generator/generated >> /plot-generator/logs/logs.txt 2>&1
+0 0 */2 * * rm -rf /plot-generator/logs/logs.txt
+50 * * * * rm -rf /plot-generator/logs/logs_realtime.txt
