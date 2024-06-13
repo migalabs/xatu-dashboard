@@ -1,8 +1,8 @@
 from utils import (
     bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format)
-from creates import df_clickhouse_create, legend_labels_percent_parse
+from df_manip import df_clickhouse_create, legend_labels_percent_parse
 from plots.pie.pie import pie_fig_create
-from sessions import BLOB_SIDECAR_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE
 
 color_map = {
     0: '#fff566',
@@ -37,7 +37,11 @@ def slots_by_blob_count_create(client):
         df, percent_names=['blob_count', 'slots'], no_perc_labels=False
     )
     df['legend_labels'] = df.apply(
-        lambda row: bold(f'{row['blob_count']:.0f} ({row['percentage']:.2f}%)'), axis=1)
+        lambda row: bold(f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
+
+    hovertemplate = (
+        f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs'
+    )
 
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
@@ -45,18 +49,15 @@ def slots_by_blob_count_create(client):
     fig = pie_fig_create(
         df, values='slots', names='legend_labels', slices_data='blob_count',
         colors={'color_discrete_map': color_map}, title=title,
-        hoverplate=(f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs'),
+        hoverplate=hovertemplate,
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
         custom_data=['blob_count'], hole_text='SLOTS'
     )
-
     title_format(fig, title_dict=dict(title_y=0.97))
-
     legend_update(
         fig, show_legend=True,
         legend_dict=dict(x=0.5, y=-0.088, title=bold('Blob count'))
     )
-
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}

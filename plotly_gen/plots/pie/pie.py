@@ -1,6 +1,5 @@
 import plotly.express as px
-import colorsys
-from creates import prefix, df_api_create, percentage_sort_by
+from creates import sort_by_column
 from export import ABS_PATH
 from utils import (
     annotations_add, hoverplate_update, title_format,
@@ -18,7 +17,9 @@ def pie_fig_create(
         df,
         values=values,
         names=names,
-        category_orders=dict(legend_labels=percentage_sort_by(df, slices_data)),
+        category_orders=dict(
+            legend_labels=sort_by_column(
+                'percentage', df, slices_data)),
         hole=hole,
         color=slices_data,
         color_discrete_map=colors.get('color_discrete_map'),
