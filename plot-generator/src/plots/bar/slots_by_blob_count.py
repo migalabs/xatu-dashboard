@@ -28,7 +28,7 @@ def slots_by_blob_count_create(client):
 
     hovertemplate = (
         f'{bold("Slots")}: %{{y:,.0f}}<br>'
-        f'{bold("Blob count")}: %{{y:,.0f}}<extra></extra>'
+        f'{bold("Blob count")}: %{{x:,.0f}}<extra></extra>'
     )
     epochs = (slot_limit / 32)
     readable_timeframe = get_epoch_readable_unit(epochs)
