@@ -17,7 +17,7 @@ color_map = {
 def missed_blocks_after_block_with_blobs(client):
     plotname = 'pie_missed-after-blob-count'
     title = 'Blob count before missed block'
-    slot_limit = 216000
+    day_limit = 30
 
     query = f'''
                 WITH prev_missed_slots as(
@@ -30,12 +30,12 @@ def missed_blocks_after_block_with_blobs(client):
                             epoch
                         from beacon_api_eth_v1_beacon_committee
                         where slot < (select max(slot) from beacon_api_eth_v1_events_head)
+                        and toDate(slot_start_date_time) > now() - interval {day_limit} day
                     ) as slot_list
                     left join beacon_api_eth_v1_events_block
                         on slot_list.slot + 1 = beacon_api_eth_v1_events_block.slot
                     where beacon_api_eth_v1_events_block.slot = 0
                     order by slot_list.slot desc
-                    limit {slot_limit}
                 )
 
                 SELECT
@@ -66,13 +66,14 @@ def missed_blocks_after_block_with_blobs(client):
         df, percent_names=['blob_count', 'slots'], no_perc_labels=False
     )
     df['legend_labels'] = df.apply(
-        lambda row: bold(f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
+        lambda row: bold(
+            f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
 
     hovertemplate = (
         f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs '
         f'before a missed block<extra></extra>'
     )
-    epochs = (slot_limit / 32)
+    epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
 
     fig = pie_fig_create(
