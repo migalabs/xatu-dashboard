@@ -14,7 +14,7 @@ color_map = {
 }
 
 
-def missed_blocks_after_block_with_blobs(client):
+def missed_blocks_after_block_with_blobs_create(client):
     plotname = 'pie_missed-after-blob-count'
     title = 'Blob count before missed block'
     day_limit = 30
@@ -59,7 +59,8 @@ def missed_blocks_after_block_with_blobs(client):
                     blob_count DESC;
     '''
     df = df_clickhouse_create(client, query, title)
-    # df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
+    df = fill_in_gaps(df, column='slot', fill_value=0, limit=len(df))
+    print(df)
     df = df.groupby('blob_count')['slot'].count().reset_index()
     df.columns = ['blob_count', 'slots']
     legend_labels_percent_parse(
@@ -68,7 +69,7 @@ def missed_blocks_after_block_with_blobs(client):
     df['legend_labels'] = df.apply(
         lambda row: bold(
             f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
-
+    print(df)
     hovertemplate = (
         f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs '
         f'before a missed block<extra></extra>'
