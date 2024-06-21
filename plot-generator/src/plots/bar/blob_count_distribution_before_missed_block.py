@@ -10,7 +10,7 @@ from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE
 
 def blob_count_distribution_before_missed_block_create(client):
     plotname = 'bar_distribution-before-missed-block'
-    title = 'Slots by blob count'
+    title = 'Blob distribution before missed block'
     day_limit = 30
 
     df_blob_count = client.query_dataframe(f'''
@@ -85,8 +85,7 @@ def blob_count_distribution_before_missed_block_create(client):
     df_blob_count = df_blob_count.sort_values(by='blob_count', ascending=True)
     df_merged = pd.merge(df, df_blob_count, on='blob_count', suffixes=('_df', '_df_blob_count'))
     df_merged['percentage'] = df_merged['slot_count_df'] / df_merged['slot_count_df_blob_count'] * 100
-    df['percentage'] = df_merged['percentage']
-    print(f'Percentage: {df_merged}')
+
     hovertemplate = (
         f'{bold("Percentage")}: %{{y:,.3f}}%<br>'
         f'{bold("Blob count")}: %{{x:,.0f}}<extra></extra>'
