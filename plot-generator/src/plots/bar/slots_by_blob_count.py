@@ -3,34 +3,44 @@ from utils import (
     fraction_clamp)
 from plots.bar.bar import bar_create_fig
 from df_manip import df_clickhouse_create
-from clickhouse import BLOB_SIDECAR_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE, BLOCK_CANON_TABLE
 
 
 def slots_by_blob_count_create(client):
     plotname = 'bar_slots-by-blob-count'
     title = 'Slots by blob count'
-    slot_limit = 216000
+    day_limit = 30
 
     query = f'''
-                select slot, count(distinct blob_index) as blob_count
-                from {BLOB_SIDECAR_TABLE}
-                where meta_network_name = 'mainnet'
-                group by slot
-                order by slot desc
-                limit {slot_limit}
+                WITH
+                    slots AS (
+                        SELECT slot
+                        FROM {BLOCK_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        and meta_network_name = 'mainnet'
+                    ),
+                    blobs AS (
+                        SELECT slot, COUNT(DISTINCT blob_index) as blob_count
+                        FROM {BLOB_SIDECAR_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        and meta_network_name = 'mainnet'
+                        GROUP BY slot
+                    )
+                SELECT s.slot as slot, IFNULL(b.blob_count, 0) as blob_count
+                FROM slots s
+                LEFT JOIN blobs b ON slot = b.slot
             '''
 
     df = df_clickhouse_create(client, query, title)
-
-    df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
+    print(df['slot_count'].sum())
 
     hovertemplate = (
         f'{bold("Slots")}: %{{y:,.0f}}<br>'
         f'{bold("Blob count")}: %{{x:,.0f}}<extra></extra>'
     )
-    epochs = (slot_limit / 32)
+    epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
     x, y = 'blob_count', 'slot_count'
 

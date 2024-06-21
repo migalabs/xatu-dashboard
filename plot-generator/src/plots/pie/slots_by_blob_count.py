@@ -2,7 +2,7 @@ from utils import (
     bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format)
 from df_manip import df_clickhouse_create, legend_labels_percent_parse
 from plots.pie.pie import pie_fig_create
-from clickhouse import BLOB_SIDECAR_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE, BLOCK_CANON_TABLE
 
 color_map = {
     0: '#fff566',
@@ -18,19 +18,29 @@ color_map = {
 def slots_by_blob_count_create(client):
     plotname = 'pie_slots-by-blob-count'
     title = 'Slots by blob count'
-    slot_limit = 216000
+    day_limit = 30
 
     query = f'''
-                select slot, count(distinct blob_index) as blob_count
-                from {BLOB_SIDECAR_TABLE}
-                where meta_network_name = 'mainnet'
-                group by slot
-                order by slot desc
-                limit {slot_limit}
+                WITH
+                    slots AS (
+                        SELECT slot
+                        FROM {BLOCK_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        and meta_network_name = 'mainnet'
+                    ),
+                    blobs AS (
+                        SELECT slot, COUNT(DISTINCT blob_index) as blob_count
+                        FROM {BLOB_SIDECAR_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        and meta_network_name = 'mainnet'
+                        GROUP BY slot
+                    )
+                SELECT s.slot as slot, IFNULL(b.blob_count, 0) as blob_count
+                FROM slots s
+                LEFT JOIN blobs b ON slot = b.slot
             '''
 
     df = df_clickhouse_create(client, query, title)
-    df = fill_in_gaps(df, column='slot', fill_value=0, limit=slot_limit)
     df = df.groupby('blob_count')['slot'].count().reset_index()
     df.columns = ['blob_count', 'slots']
     legend_labels_percent_parse(
@@ -43,7 +53,7 @@ def slots_by_blob_count_create(client):
         f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs'
     )
 
-    epochs = (slot_limit / 32)
+    epochs = (day_limit * 225)
     readable_timeframe = get_epoch_readable_unit(epochs)
 
     fig = pie_fig_create(

@@ -49,10 +49,16 @@ def format_x_axis(
     tickvals = []
     # if the x skips are present, use them to create the tickvals
     if (isinstance(xskips, float) or isinstance(xskips, int)):
-        tickvals = [x for x in np.arange(0, len(df[x_axis_info[0]]), int(xskips))]
+        # the extra range/ticks at the end is just a bandaid fix to what
+        # I believe is a bug in Plotly. The last ticks are sometimes
+        # not shown, and for some reason adding more values to tickvals
+        # fixes that :p
+        tickvals = [x for x in np.arange(0, len(df[x_axis_info[0]]) + xskips, int(xskips))]
+        print(tickvals)
         fig.update_xaxes(tickvals=tickvals)
     if (callable(xtickformat)):  # if xtickformat is a formatter function...
-        ticktext = [xtickformat(df[x_axis_info[0]].iloc[x]) for x in tickvals]
+        range = [x for x in np.arange(0, len(df[x_axis_info[0]]), int(xskips))]
+        ticktext = [xtickformat(df[x_axis_info[0]].iloc[x]) for x in range]
         fig.update_xaxes(tickmode='array', ticktext=ticktext)
     else:  # if xtickformat is a string, use plotly's tickformatting
         fig.update_xaxes(tickformat=xtickformat)

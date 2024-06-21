@@ -15,7 +15,9 @@ def bar_create_fig(
     color_discrete_sequence: list[str], thickness, hovertemplate,
     xskips: float, yskips: float, title_annotation=None, color=None,
     show_legend: bool = False, customdata: list[str] = [],
-    barmode: str = 'overlay', margin: int = 15
+    barmode: str = 'overlay', margin: int = 15,
+    y_formatter=lambda y: bold(f"{y:,.0f}"),
+    x_formatter=lambda x: bold(f"{x}")
 ):
     x, y = x_axis_info[0], y_axis_info[0]
     fig = px.bar(
@@ -47,8 +49,8 @@ def bar_create_fig(
         size=12
     )
 
-    format_y_axis(df, fig, y_axis_info, yskips, lambda y: bold(f"{y:,.0f}"))
-    format_x_axis(df, fig, x_axis_info, xskips, lambda x: bold(f"{x}"))
+    format_y_axis(df, fig, y_axis_info, yskips, y_formatter)
+    format_x_axis(df, fig, x_axis_info, xskips, x_formatter)
 
     if (show_legend):
         set_default_legend_style(fig)

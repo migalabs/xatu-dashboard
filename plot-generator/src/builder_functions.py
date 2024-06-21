@@ -15,8 +15,8 @@ blob_functions = [
     box.block_size_vs_blobs_create,                         # 7 box_block-size-vs-blobs
     pie.missed_blocks_after_block_with_blobs_create,        # 8 pie_missed-after-blob-count
     area.blob_hash_repetitions_create,                      # 9 area_blob-hash-repetitions
-    box.blob_propagation_blob_count_create,                 # 10 area_blob-hash-repetitions
-    bar.blob_count_distribution_before_missed_block_create  # 11 area_blob-hash-repetitions
+    box.blob_propagation_blob_count_create,                 # 10 box_blob-propagation-blob-count
+    bar.blob_count_distribution_before_missed_block_create  # 11 bar_distribution-before-missed-block
 ]
 
 builder_functions = blob_functions

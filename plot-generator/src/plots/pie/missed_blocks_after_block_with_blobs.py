@@ -1,7 +1,7 @@
 from plots.pie.pie import pie_fig_create
 from df_manip import df_clickhouse_create, legend_labels_percent_parse
 from utils import bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format
-from clickhouse import BLOB_SIDECAR_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_CANON_TABLE
 
 color_map = {
     0: '#fff566',
@@ -31,6 +31,7 @@ def missed_blocks_after_block_with_blobs_create(client):
                         from beacon_api_eth_v1_beacon_committee
                         where slot < (select max(slot) from beacon_api_eth_v1_events_head)
                         and toDate(slot_start_date_time) > now() - interval {day_limit} day
+                        and meta_network_name = 'mainnet'
                     ) as slot_list
                     left join beacon_api_eth_v1_events_block
                         on slot_list.slot + 1 = beacon_api_eth_v1_events_block.slot
@@ -59,8 +60,6 @@ def missed_blocks_after_block_with_blobs_create(client):
                     blob_count DESC;
     '''
     df = df_clickhouse_create(client, query, title)
-    df = fill_in_gaps(df, column='slot', fill_value=0, limit=len(df))
-    print(df)
     df = df.groupby('blob_count')['slot'].count().reset_index()
     df.columns = ['blob_count', 'slots']
     legend_labels_percent_parse(
