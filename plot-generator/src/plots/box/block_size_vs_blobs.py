@@ -36,7 +36,7 @@ def block_size_vs_blobs_create(client):
             '''
 
     df = df_clickhouse_create(client, query, title)
-    print(df)
+
     hovertemplate = (
         f'{bold("Block size")}: %{{y:,.0f}}kb<br>'
         f'{bold("Number of blobs")}: %{{x:,.0f}}<extra></extra>'

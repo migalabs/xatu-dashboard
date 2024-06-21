@@ -68,7 +68,7 @@ def missed_blocks_after_block_with_blobs_create(client):
     df['legend_labels'] = df.apply(
         lambda row: bold(
             f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
-    print(df)
+
     hovertemplate = (
         f'{bold("%{value}")} slots with {bold("%{customdata[0]}")} blobs '
         f'before a missed block<extra></extra>'
