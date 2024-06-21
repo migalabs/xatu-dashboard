@@ -54,7 +54,6 @@ def format_x_axis(
         # not shown, and for some reason adding more values to tickvals
         # fixes that :p
         tickvals = [x for x in np.arange(0, len(df[x_axis_info[0]]) + xskips, int(xskips))]
-        print(tickvals)
         fig.update_xaxes(tickvals=tickvals)
     if (callable(xtickformat)):  # if xtickformat is a formatter function...
         range = [x for x in np.arange(0, len(df[x_axis_info[0]]), int(xskips))]
