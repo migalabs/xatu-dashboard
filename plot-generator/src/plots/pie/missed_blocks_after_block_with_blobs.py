@@ -81,7 +81,7 @@ def missed_blocks_after_block_with_blobs_create(client):
         colors={'color_discrete_map': color_map}, title=title,
         hoverplate=hovertemplate,
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})',
-        custom_data=['blob_count'], hole_text='SLOTS'
+        custom_data=['blob_count'], hole_text='BLOCKS MISSED'
     )
     title_format(fig, title_dict=dict(title_y=0.97))
     legend_update(
