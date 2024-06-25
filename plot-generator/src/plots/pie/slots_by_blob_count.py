@@ -26,18 +26,25 @@ def slots_by_blob_count_create(client):
                         SELECT slot
                         FROM {BLOCK_TABLE}
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
-                        and meta_network_name = 'mainnet'
+                        AND meta_network_name == 'mainnet'
                     ),
                     blobs AS (
                         SELECT slot, COUNT(DISTINCT blob_index) as blob_count
                         FROM {BLOB_SIDECAR_TABLE}
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
-                        and meta_network_name = 'mainnet'
+                        AND meta_network_name == 'mainnet'
                         GROUP BY slot
+                    ),
+                    canonical AS (
+                        SELECT slot
+                        FROM {BLOCK_CANON_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        AND meta_network_name == 'mainnet'
                     )
                 SELECT s.slot as slot, IFNULL(b.blob_count, 0) as blob_count
                 FROM slots s
                 LEFT JOIN blobs b ON slot = b.slot
+                LEFT JOIN canonical c ON slot = c.slot
             '''
 
     df = df_clickhouse_create(client, query, title)

@@ -5,7 +5,7 @@ from plots.bar.bar import bar_create_fig
 from df_manip import df_clickhouse_create
 import pandas as pd
 import numpy as np
-from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE
+from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE, BLOCK_CANON_TABLE
 from plots.pie.missed_blocks_after_block_with_blobs import get_blob_count_before_miss
 
 
@@ -20,18 +20,25 @@ def blob_count_distribution_before_missed_block_create(client):
                         SELECT slot
                         FROM {BLOCK_TABLE}
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
-                        and meta_network_name = 'mainnet'
+                        AND meta_network_name == 'mainnet'
                     ),
                     blobs AS (
                         SELECT slot, COUNT(DISTINCT blob_index) as blob_count
                         FROM {BLOB_SIDECAR_TABLE}
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
-                        and meta_network_name = 'mainnet'
+                        AND meta_network_name == 'mainnet'
                         GROUP BY slot
+                    ),
+                    canonical AS (
+                        SELECT slot
+                        FROM {BLOCK_CANON_TABLE}
+                        WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
+                        AND meta_network_name == 'mainnet'
                     )
                 SELECT s.slot as slot, IFNULL(b.blob_count, 0) as blob_count
                 FROM slots s
                 LEFT JOIN blobs b ON slot = b.slot
+                LEFT JOIN canonical c ON slot = c.slot
         ''')
     df_blob_count = df_blob_count.groupby('blob_count')['slot'].nunique().reset_index()
     df_blob_count.columns = ['blob_count', 'slot_count']
