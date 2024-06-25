@@ -6,6 +6,7 @@ from df_manip import df_clickhouse_create
 import pandas as pd
 import numpy as np
 from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE
+from plots.pie.missed_blocks_after_block_with_blobs import get_blob_count_before_miss
 
 
 def blob_count_distribution_before_missed_block_create(client):
@@ -35,53 +36,10 @@ def blob_count_distribution_before_missed_block_create(client):
     df_blob_count = df_blob_count.groupby('blob_count')['slot'].nunique().reset_index()
     df_blob_count.columns = ['blob_count', 'slot_count']
 
-    query = f'''
-                WITH prev_missed_slots as(
-                    select
-                        slot_list.slot,
-                        epoch
-                    from (
-                        select
-                            distinct(slot),
-                            epoch
-                        from beacon_api_eth_v1_beacon_committee
-                        where slot < (select max(slot) from beacon_api_eth_v1_events_head)
-                        and toDate(slot_start_date_time) > now() - interval {day_limit} day
-                        and meta_network_name = 'mainnet'
-                    ) as slot_list
-                    left join beacon_api_eth_v1_events_block
-                        on slot_list.slot + 1 = beacon_api_eth_v1_events_block.slot
-                    where beacon_api_eth_v1_events_block.slot = 0
-                    order by slot_list.slot desc
-                )
-
-                SELECT
-                    slt.slot,
-                    ubm.block_root,
-                    count(DISTINCT ubm.blob_index) AS blob_count
-                FROM
-                    prev_missed_slots AS slt
-                LEFT JOIN
-                    (select distinct *
-                    from beacon_api_eth_v1_events_blob_sidecar) AS ubm
-                ON
-                    slt.slot = ubm.slot
-                    AND ubm.meta_network_name = 'mainnet'
-                WHERE
-                    block_root != ''
-                GROUP BY
-                    slt.slot,
-                    ubm.block_root
-                ORDER BY
-                    blob_count DESC;
-            '''
-
-    df = df_clickhouse_create(client, query, title)
-
+    df = get_blob_count_before_miss(client, day_limit, title)
     df = df.groupby('blob_count')['slot'].nunique().reset_index()
     df.columns = ['blob_count', 'slot_count']
     df = df.sort_values(by='blob_count', ascending=True)
-    df_blob_count = df_blob_count[df_blob_count['blob_count'] > 0]
     df_blob_count = df_blob_count.sort_values(by='blob_count', ascending=True)
     df_merged = pd.merge(df, df_blob_count, on='blob_count', suffixes=('_df', '_df_blob_count'))
     df_merged['percentage'] = df_merged['slot_count_df'] / df_merged['slot_count_df_blob_count'] * 100
