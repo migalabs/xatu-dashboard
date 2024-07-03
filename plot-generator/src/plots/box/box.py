@@ -1,5 +1,4 @@
 import plotly.express as px
-import numpy as np
 from export import ABS_PATH
 from axis_tools import format_y_axis, format_x_axis
 from utils import (
@@ -13,12 +12,12 @@ def box_create_fig(
     x_axis_info: tuple,
     y_axis_info: tuple, color_discrete_map: list[str],
     thickness: float, hovertemplate: str,
+    #  quartilemethod = "exclusive", "inclusive" or "linear",
     xskips: float, yskips: float, color=None, quartilemethod=None,
     points: str = '', notched: bool = False, boxmode: str = 'group',
     xtickformat=lambda x: bold(f'{x:,.0f}'),
     ytickformat=lambda y: bold(f'{y:,.0f}'),
     yrange: list[float] = None, xrange: list[float] = None,
-    #  quartilemethod = "exclusive", "inclusive" or "linear",
     title_annotation=None, margin: int = 15
 ):
     fig = px.box(
@@ -29,7 +28,6 @@ def box_create_fig(
         title=title,
         color=color,
         notched=notched,
-        # color_discrete_sequence=color_discrete_sequence,
         color_discrete_map=color_discrete_map,
         boxmode=boxmode
     )
@@ -60,8 +58,6 @@ def box_create_fig(
 
     fig.update_traces(quartilemethod=quartilemethod)
     fig.update_yaxes(gridcolor='#f3f3f3', linewidth=2)
-    # for trace in fig.data:
-    #     trace.marker = dict(outliercolor=trace.marker.line.color)
     watermark_add(fig, file=(f'{ABS_PATH}/assets/migalabsLogo.png'), x=0.5, y=0.5)
     fig.update_layout(margin_pad=margin)
     return (fig)

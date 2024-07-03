@@ -1,9 +1,7 @@
 from plots.area.area import (
-    area_create_fig, area_customize,
-    DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE)
-from utils import (
-    date_since, bold, get_epoch_readable_unit,
-    fraction_clamp)
+    area_create_fig, area_customize)
+from axis_tools import DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE
+from utils import bold, get_epoch_readable_unit
 from df_manip import df_clickhouse_create
 from clickhouse import BLOB_SIDECAR_TABLE
 from units import format_seconds
@@ -15,23 +13,30 @@ def average_blob_arrival_create(client):
     day_limit = 30
 
     query = f'''
-                select
+                SELECT
                     toDate(slot_start_date_time) AS day,
                     AVG(propagation_slot_start_diff) AS avg_delay_ms
-                from (
-                    select *,
-                           ROW_NUMBER() OVER (PARTITION BY block_root, versioned_hash, blob_index, slot ORDER BY slot_start_date_time ASC) AS rn
-                    from {BLOB_SIDECAR_TABLE}
-                    where meta_network_name = 'mainnet'
+                FROM (
+                    SELECT *,
+                            ROW_NUMBER() OVER (
+                                PARTITION BY
+                                    block_root, versioned_hash, blob_index, slot
+                                ORDER BY
+                                    slot_start_date_time ASC
+                            ) AS rn
+                    FROM {BLOB_SIDECAR_TABLE}
+                    WHERE meta_network_name = 'mainnet'
                     and propagation_slot_start_diff < 100000
                 )
-                where rn = 1
-                group BY day
-                order BY day desc
-                limit {day_limit}
+                WHERE rn = 1
+                GROUP BY day
+                ORDER BY day DESC
+                LIMIT {day_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)
+
+    # Convert delay to seconds
     df['avg_delay_s'] = df['avg_delay_ms'] / 1000
 
     hovertemplate = (
@@ -58,7 +63,9 @@ def average_blob_arrival_create(client):
         ytickformat=format_seconds,
         title_annotation=f'Latest {epochs:,.0f} epochs ({readable_timeframe})'
     )
+    # Tilt ticks slightly
     fig.update_layout(xaxis_tickangle=45)
+
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
 
     return {plotname: plot_div}

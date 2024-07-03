@@ -1,25 +1,20 @@
-from typing import Callable, Union, Any, Optional
+from typing import Callable, Union, Optional
 from utils import (
     watermark_add, title_format, legend_update,
     hoverplate_update, bold, annotations_delete,
     set_default_legend_style
 )
-from axis_tools import (
-    format_y_axis, format_x_axis,
-    DEFAULT_DATE_FORMAT, FIVE_DAYS_RATE
-)
-from datetime import datetime
+from axis_tools import format_y_axis, format_x_axis
 from export import ABS_PATH
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
-import numpy as np
-
-end_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-# Set area filling with custom opacity. If not filled, opacity is changed to 0.
 def set_area_filling(fig: go.Figure, markers: bool, fill: bool):
+    '''
+    Set area filling with custom opacity. If not filled, opacity is set to 0.
+    '''
     opac = ', 0.3)' if (fill) else ', 0)'
 
     fig.for_each_trace(lambda t: t.update(  # For each line,
@@ -33,9 +28,6 @@ def set_area_filling(fig: go.Figure, markers: bool, fill: bool):
     )
 
 
-# Used as a "line graph" but it's actually a stacked area plot
-# Creates barebones area fig
-# facet_row: column that separates the data for stacked plots
 def area_create_fig(
     df: pd.DataFrame,
     x: str, y: str, color: str,
@@ -43,6 +35,10 @@ def area_create_fig(
     line_color: str, facet_row: str = '', log_y: bool = False,
     fill: bool = True, margin: int = 15
 ) -> go.Figure:
+    '''
+    Create a simple area figure.\n
+    Note: `facet_row` is the column that separates the data for stacked plots.
+    '''
     fig = px.area(
         df,
         x=x,
@@ -65,11 +61,6 @@ def area_create_fig(
     return (fig)
 
 
-# Add more (important) attributes to the plot
-# If any of the tickformat parameters is a function,
-# It will apply it to all ticks with [skips] spacing.
-# Otherwise, will apply the string tickformat for plotly
-# and will use rate for the spacing/rate instead of xskips
 def area_customize(
     df: pd.DataFrame, fig: go.Figure, title: str,
     x_axis_info: tuple, y_axis_info: tuple,
@@ -81,6 +72,13 @@ def area_customize(
     yrange: Optional[list[int]] = None,
     title_annotation: str = ''
 ):
+    '''
+    Add more attributes to an area figure.\n
+    If any of the tickformat parameters is a function,
+    it will run it for all ticks with `axis_skips` spacing.\n
+    Otherwise, it will use Plotly's tickformatting
+    and `rate` for the spacing instead of `axis_skips`
+    '''
     if (show_legend):
         set_default_legend_style(fig)
     else:

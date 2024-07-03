@@ -1,5 +1,7 @@
 from utils import bold
 
+# -- Functions used for tick formatting --
+
 
 def format_seconds(seconds: float) -> str:
     if (seconds >= 1):

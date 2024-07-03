@@ -1,9 +1,7 @@
-import sys
-import time
-import pandas as pd
-import numpy as np
-from PIL import Image
 from datetime import datetime, timedelta
+from PIL import Image
+import pandas as pd
+import time
 
 annotation_format_default = {
     'font_family': 'Lato',
@@ -57,11 +55,10 @@ def set_default_legend_style(fig):
     )
 
 
-# This and the group of functions related to plots in this file just
-# grab a default value (from above) as starting point unless you overwrite
-# by specifying in the parameters (dict)
-# This is just to make a default style and will help making new plots
-# fit with others visually
+# This and the group of functions related to plots in this file
+# use the `[attribute]_default` dicts. You may overwrite
+# the attributes as you wish by passing in a new dict with the fields you
+# want to replace.
 def annotations_add(
     fig, annotations: list[dict], format: dict = annotation_format_default
 ):
@@ -139,53 +136,28 @@ def date_since(days: int, format: str = '%Y-%m-%dT%H:%M:%SZ'):
     return (date.strftime(format))
 
 
-# Get 2 unix dates from date strings formatted '%Y-%m-%dT%H:%M:%SZ'
-def to_unix_date_tuple(date1, date2, rounding=1440):
-    date1_obj = datetime.strptime(date1, "%Y-%m-%dT%H:%M:%SZ")
-    date2_obj = datetime.strptime(date2, "%Y-%m-%dT%H:%M:%SZ")
+def to_unix_date_tuple(
+    date1, date2, rounding=1440, format: str = '%Y-%m-%dT%H:%M:%SZ'
+) -> tuple:
+    '''
+    Get a tuple of unix dates from date strings
+    '''
+    date1_obj = datetime.strptime(date1, format)
+    date2_obj = datetime.strptime(date2, format)
 
     unix_date1 = int(time.mktime(date1_obj.timetuple()))
     unix_date2 = int(time.mktime(date2_obj.timetuple()))
 
     # Rounded to the minute
-    return [
+    return (
         int(unix_date1 / rounding) * rounding,
         int(unix_date2 / rounding) * rounding
-    ]
+    )
 
 
 def df_unix_to_8601_format(df, column: str = 'timestamp'):
     df[column] = pd.to_datetime(df[column], unit='s')
     df[column] = df[column].dt.strftime('%Y-%m-%dT%H:%M:%SZ')
-
-
-def fill_in_gaps(df, column, fill_value, limit=None):
-    df.set_index(column, inplace=True)
-    full_index = pd.Index(
-        np.arange(df.index.min(), df.index.max() + 1), name=column)
-    df = df.reindex(full_index, fill_value=0)
-    df.reset_index(inplace=True)
-    if (limit):
-        df = df.tail(limit)
-        df.reset_index(inplace=True)
-
-    return (df)
-
-
-def get_avg_str(ticktextFormatter, averages) -> str:
-    dec_string = f'   (   {bold("Avg.  ")} '
-    avg_string = ''
-    sep = False
-
-    for avg in averages:
-        dec_string += '</b>and  <b>' if sep else ''
-        if (ticktextFormatter):
-            avg_string = ticktextFormatter(avg)
-        else:
-            avg_string = str(avg) + '%   '
-        dec_string += avg_string
-        sep = True
-    return (dec_string + ')')
 
 
 def bold(text):
@@ -200,6 +172,11 @@ time_string_map = {
 
 
 def get_epoch_readable_unit(epochs: float) -> str:
+    '''
+    Convert epochs into a readable string according to `time_string_map`.
+
+    Example: with 225 epochs, returned string is '1 day'
+    '''
     for unit, value in time_string_map.items():
         threshold = value['amount']
         if (epochs >= threshold):
@@ -212,7 +189,10 @@ def get_epoch_readable_unit(epochs: float) -> str:
     return ('')
 
 
-def fraction_clamp(fraction, clamp=200):
+def fraction_clamp(fraction: float, clamp=200):
+    '''
+    Round a float to the closest multiple of `clamp`.
+    '''
     smaller = int(fraction / clamp) * clamp
     bigger = smaller + clamp
     if ((fraction - smaller) > (bigger - fraction)):
