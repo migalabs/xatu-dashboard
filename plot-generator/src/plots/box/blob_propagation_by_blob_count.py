@@ -21,20 +21,20 @@ def blob_propagation_blob_count_create(client):
     slot_limit = 216000
 
     query = f'''
-                select
-                    blob_sidecars.slot as slot,
-                    AVG(propagation_slot_start_diff / 1000) as avg_propagation,
-                    count(distinct blob_index) as blob_count
-                from (
-                    select *
-                    from {BLOB_SIDECAR_TABLE}
-                    where propagation_slot_start_diff <= 100000
-                ) as blob_sidecars
-                inner join {BLOCK_TABLE} as blobs
-                on blob_sidecars.slot = blobs.slot
-                group by blob_sidecars.slot
-                order by blob_sidecars.slot desc
-                limit {slot_limit}
+                SELECT
+                    blob_sidecars.slot AS slot,
+                    AVG(propagation_slot_start_diff / 1000) AS avg_propagation,
+                    COUNT(distinct blob_index) AS blob_count
+                FROM (
+                    SELECT *
+                    FROM {BLOB_SIDECAR_TABLE}
+                    WHERE propagation_slot_start_diff <= 100000
+                ) AS blob_sidecars
+                INNER JOIN {BLOCK_TABLE} AS blobs
+                ON blob_sidecars.slot = blobs.slot
+                GROUP BY blob_sidecars.slot
+                ORDER BY blob_sidecars.slot DESC
+                LIMIT {slot_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)

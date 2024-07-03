@@ -20,19 +20,19 @@ def block_size_vs_blobs_create(client):
     slot_limit = 216000
 
     query = f'''
-                select
-                    blob_sidecars.slot as slot,
-                    (max(block_total_bytes) / 1024) as kb_block_size,
-                    count(distinct blob_index) as blob_count
-                from (
-                    select *
-                    from {BLOB_SIDECAR_TABLE}
-                ) as blob_sidecars
-                inner join {BLOCK_TABLE} as blobs
-                on blob_sidecars.slot = blobs.slot
-                group by blob_sidecars.slot
-                order by blob_sidecars.slot desc
-                limit {slot_limit}
+                SELECT
+                    blob_sidecars.slot AS slot,
+                    (MAX(block_total_bytes) / 1024) AS kb_block_size,
+                    COUNT(distinct blob_index) AS blob_count
+                FROM (
+                    SELECT *
+                    FROM {BLOB_SIDECAR_TABLE}
+                ) AS blob_sidecars
+                INNER JOIN {BLOCK_TABLE} AS blobs
+                ON blob_sidecars.slot = blobs.slot
+                GROUP BY blob_sidecars.slot
+                ORDER BY blob_sidecars.slot DESC
+                LIMIT {slot_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)

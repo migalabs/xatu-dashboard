@@ -1,5 +1,5 @@
 from utils import (
-    bold, fill_in_gaps, get_epoch_readable_unit, legend_update, title_format)
+    bold, get_epoch_readable_unit, legend_update, title_format)
 from df_manip import df_clickhouse_create, legend_labels_percent_parse
 from plots.pie.pie import pie_fig_create
 from clickhouse import BLOB_SIDECAR_TABLE, BLOCK_TABLE, BLOCK_CANON_TABLE
@@ -29,7 +29,7 @@ def slots_by_blob_count_create(client):
                         AND meta_network_name == 'mainnet'
                     ),
                     blobs AS (
-                        SELECT slot, COUNT(DISTINCT blob_index) as blob_count
+                        SELECT slot, COUNT(DISTINCT blob_index) AS blob_count
                         FROM {BLOB_SIDECAR_TABLE}
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
                         AND meta_network_name == 'mainnet'
@@ -41,7 +41,7 @@ def slots_by_blob_count_create(client):
                         WHERE toDate(slot_start_date_time) > now() - INTERVAL {day_limit} day
                         AND meta_network_name == 'mainnet'
                     )
-                SELECT s.slot as slot, IFNULL(b.blob_count, 0) as blob_count
+                SELECT s.slot AS slot, IFNULL(b.blob_count, 0) AS blob_count
                 FROM slots s
                 LEFT JOIN blobs b ON slot = b.slot
                 LEFT JOIN canonical c ON slot = c.slot
@@ -50,9 +50,7 @@ def slots_by_blob_count_create(client):
     df = df_clickhouse_create(client, query, title)
     df = df.groupby('blob_count')['slot'].count().reset_index()
     df.columns = ['blob_count', 'slots']
-    legend_labels_percent_parse(
-        df, percent_names=['blob_count', 'slots'], no_perc_labels=False
-    )
+    legend_labels_percent_parse(df, percent_names=['blob_count', 'slots'])
     df['legend_labels'] = df.apply(
         lambda row: bold(f'{row["blob_count"]:.0f} ({row["percentage"]:.2f}%)'), axis=1)
 

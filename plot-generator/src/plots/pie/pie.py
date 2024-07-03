@@ -40,9 +40,8 @@ def pie_fig_create(
         textposition='none'
     )
 
-    # This adds the 'TOTAL' annotation inside of the donut
-    annotations_add(fig,
-        [
+    # This adds an annotation inside of the donut
+    annotations_add(fig, [
             dict(
                 text=hole_text,
                 font_color='gray',

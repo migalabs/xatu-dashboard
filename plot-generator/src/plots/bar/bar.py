@@ -1,5 +1,4 @@
 import plotly.express as px
-import numpy as np
 from utils import set_default_legend_style
 from export import ABS_PATH
 from utils import (

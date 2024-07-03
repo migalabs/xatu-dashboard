@@ -5,6 +5,7 @@ import plots.area as area
 import plots.box as box
 import plots.pie as pie
 
+# Functions for the blob dashboard.
 blob_functions = [
     get_current_timestamp,                                  # 1 timestamp
     bar.slots_by_blob_count_create,                         # 2 bar_slots-by-blob-count
@@ -22,14 +23,18 @@ blob_functions = [
 builder_functions = blob_functions
 
 
-# Returns an array with the corresponding functions inside the given indexes
-# Will return all functions if args are empty
-# Note: to use with flag -t
-# * "-t 1 2" will select the first and second function, etc
 def get_test_functions(args, functions=builder_functions) -> List[Callable]:
+    '''
+    Get functions specified with the `-t` flag.
+    Returns an array with the corresponding functions inside the given indexes.
+
+    Returns all functions if args are empty.
+
+    Example: "-t 1 2" will select the first and second function in the array.
+    '''
     n_args = args.__len__()
     testing_functions = functions.copy()
-    testing_functions.extend([])  # add any extras solely for testing purposes
+    testing_functions.extend([])  # add any extras for testing purposes
 
     if (n_args > 0):
         testing_list = []

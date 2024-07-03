@@ -19,24 +19,29 @@ def first_last_difference_create(client):
     slot_limit = 216000
 
     query = f'''
-                select
+                SELECT
                     slot,
-                    count(distinct blob_index) as blob_count,
-                    min(propagation_slot_start_diff)/1000 min,
-                    max(propagation_slot_start_diff)/1000 max,
+                    COUNT(distinct blob_index) AS blob_count,
+                    MIN(propagation_slot_start_diff)/1000 min,
+                    MAX(propagation_slot_start_diff)/1000 max,
                     AVG(propagation_slot_start_diff)/1000 AS avg
-                from (
-                    select *,
-                           ROW_NUMBER() over (partition by block_root, versioned_hash, blob_index, slot ORDER by slot_start_date_time asc) as rn
-                    from {BLOB_SIDECAR_TABLE}
-                    where meta_network_name = 'mainnet'
-                    and propagation_slot_start_diff < 100000
+                FROM (
+                    SELECT *,
+                            ROW_NUMBER() over (
+                                partition BY
+                                    block_root, versioned_hash, blob_index, slot
+                                ORDER BY
+                                    slot_start_date_time asc
+                            ) AS rn
+                    FROM {BLOB_SIDECAR_TABLE}
+                    WHERE meta_network_name = 'mainnet'
+                    AND propagation_slot_start_diff < 100000
                 )
-                where rn = 1
-                group by slot
-                having count(distinct blob_index) >= 2
-                order by slot desc
-                limit {slot_limit}
+                WHERE rn = 1
+                GROUP BY slot
+                HAVING count(distinct blob_index) >= 2
+                ORDER BY slot DESC
+                LIMIT {slot_limit}
             '''
 
     df = df_clickhouse_create(client, query, title)

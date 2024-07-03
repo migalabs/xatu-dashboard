@@ -3,13 +3,14 @@ from utils import bold
 import numpy as np
 
 DEFAULT_DATE_FORMAT = bold('%B %d, %Y, %I:%M %p')
+# Some macros for rates:
 ONE_DAY_RATE = '86400000'
 FIVE_DAYS_RATE = '432000000'
 TEN_DAYS_RATE = '864000000'
 MONTH_RATE = 'M1'
 
 
-# At the moment, this only works with y axis that only contain numbers
+# This only works with numerical y axis
 def format_y_axis(
     df, fig, y_axis_info: tuple, yskips: Optional[float],
     ytickformat: Union[Callable, str],
@@ -40,7 +41,7 @@ def format_y_axis(
 
 
 # For formatting numbers e.g. ",.0f", use plotly's formatting.
-# Custom ticktext formatting fails in this case.
+# Custom ticktext formatting fails in this case (Plotly bug?).
 def format_x_axis(
     df, fig, x_axis_info: tuple, xskips: Optional[Union[float, str]],
     xtickformat: Union[Callable, str],
@@ -52,7 +53,7 @@ def format_x_axis(
         # the extra range/ticks at the end is just a bandaid fix to what
         # I believe is a bug in Plotly. The last ticks are sometimes
         # not shown, and for some reason adding more values to tickvals
-        # fixes that :p
+        # fixes that.
         tickvals = [x for x in np.arange(0, len(df[x_axis_info[0]]) + xskips, int(xskips))]
         fig.update_xaxes(tickvals=tickvals)
     if (callable(xtickformat)):  # if xtickformat is a formatter function...

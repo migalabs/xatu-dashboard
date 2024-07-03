@@ -1,12 +1,14 @@
 from plots.area.area import area_create_fig, area_customize
 from df_manip import df_clickhouse_create
 from clickhouse import BLOB_SIDECAR_TABLE
-from utils import date_since, fraction_clamp
-from typing import List
+from utils import fraction_clamp
 from utils import bold
 
 
 def format_truncate(x: str) -> str:
+    '''
+    Get the string's first 10 characters plus a trailing '...'
+    '''
     return (f'{str(x)[:10]}...')
 
 
@@ -18,12 +20,12 @@ def blob_hash_repetitions_create(client):
     query = f'''
                 select
                     versioned_hash,
-                    count(*) as repeat_times
-                from {BLOB_SIDECAR_TABLE}
-                where meta_network_name = 'mainnet'
-                group by versioned_hash
-                order by repeat_times desc
-                limit {limit}
+                    COUNT(*) AS repeat_times
+                FROM {BLOB_SIDECAR_TABLE}
+                WHERE meta_network_name = 'mainnet'
+                GROUP BY versioned_hash
+                ORDER BY repeat_times DESC
+                LIMIT {limit}
             '''
 
     df = df_clickhouse_create(client, query, title)
@@ -51,6 +53,7 @@ def blob_hash_repetitions_create(client):
         xtickformat=format_truncate,
         title_annotation=f'{limit} hashes (all time)'
     )
+    # Tilt ticks slightly
     fig.update_layout(xaxis_tickangle=45)
 
     plot_div = fig.to_html(full_html=False, include_plotlyjs=False)
