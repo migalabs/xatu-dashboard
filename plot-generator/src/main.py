@@ -14,7 +14,6 @@ def main():
     # find the corresponding flags and arguments and execute them
     for flag, function in flags.items():
         args = options.get(flag)
-        print(flag, args)
         if (args):
             (dashboards, testing_functions) = function(args, dashboards, testing_functions)
 
