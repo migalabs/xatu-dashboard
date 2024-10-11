@@ -17,7 +17,7 @@ def blob_size_used_per_blob_create(client):
                     AVG((blob_sidecars_size-blob_sidecars_empty_size) / blob_sidecars_size * 100)  AS used_blob_size
                 FROM {TXS_TABLE}
                 WHERE meta_network_name = 'mainnet' AND type = 3
-                AND slot_start_date_time > now() - interval 30 day
+                AND slot_start_date_time > now() - interval {day_limit} day
                 GROUP BY day
             '''
 
