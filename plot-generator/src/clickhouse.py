@@ -4,7 +4,7 @@ import os
 BLOB_SIDECAR_TABLE = 'beacon_api_eth_v1_events_blob_sidecar'
 BLOCK_TABLE = 'beacon_api_eth_v2_beacon_block'
 BLOCK_CANON_TABLE = 'canonical_beacon_block'
-TXS_TABLE = 'mempool_transaction'
+TXS_TABLE = 'canonical_beacon_block_execution_transaction_local'
 
 
 def clickhouse_client_init() -> Client:
