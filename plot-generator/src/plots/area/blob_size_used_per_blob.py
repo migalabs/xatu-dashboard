@@ -12,12 +12,12 @@ def blob_size_used_per_blob_create(client):
     day_limit = 30
 
     query = f'''
-               SELECT
-                    toDate(event_date_time) AS day,
+                SELECT
+                    toDate(slot_start_date_time) AS day,
                     AVG((blob_sidecars_size-blob_sidecars_empty_size) / blob_sidecars_size * 100)  AS used_blob_size
                 FROM {TXS_TABLE}
-                WHERE meta_network_name = 'mainnet'
-                AND event_date_time > now() - interval {day_limit} day
+                WHERE meta_network_name = 'mainnet' AND type = 3
+                AND slot_start_date_time > now() - interval 30 day
                 GROUP BY day
             '''
 
